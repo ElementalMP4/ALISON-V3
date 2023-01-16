@@ -1,6 +1,6 @@
 /*
 	ALISON - Automatic Learning Intelligent Sentence Organising Network
-    Copyright (C) 2022 ElementalMP4 (https://github.com/Elementalmp4/ALISON)
+    Copyright (C) 2023 ElementalMP4 (https://github.com/Elementalmp4/ALISON-V3)
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +18,6 @@ package main.java.de.voidtech.alison;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 import javax.security.auth.login.LoginException;
 
@@ -29,7 +28,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.annotation.Order;
 
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
