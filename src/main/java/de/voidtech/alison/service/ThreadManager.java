@@ -12,7 +12,7 @@ public class ThreadManager
     private HashMap<String, ExecutorService> threadMap;
     
     public ThreadManager() {
-        this.threadMap = new HashMap<String, ExecutorService>();
+        this.threadMap = new HashMap<>();
     }
     
     private ExecutorService findOrSpawnThread(final String threadID) {

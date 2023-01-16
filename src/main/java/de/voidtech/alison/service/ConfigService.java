@@ -45,13 +45,23 @@ public class ConfigService
             LOGGER.log(Level.SEVERE, "There is no config file. You need a file called AlisonConfig.properties at the root of the project!");
         }
     }
+
+    public String getGavinUrl() {
+        String url = config.getProperty("gavin_api");
+        return url != null ? url : "http://localhost:6970/chat_bot/";
+    }
+
+    public String getApiUrl() {
+        String url = config.getProperty("utils_api");
+        return url != null ? url : "http://localhost:3000/api/";
+    }
     
     public String getToken() {
         return this.config.getProperty("discord_token");
     }
     
     public String getDefaultPrefix() {
-        final String prefix = this.config.getProperty("default_prefix");
+        final String prefix = this.config.getProperty("discord_prefix");
         return (prefix != null) ? prefix : "a!";
     }
     
@@ -63,5 +73,10 @@ public class ConfigService
     public String getMongoConnectionURL() {
         final String dbURL = this.config.getProperty("mongodb_url");
         return (dbURL != null) ? dbURL : "mongodb://localhost:27017/?maxPoolSize=20&w=majority";
+    }
+
+    public String getMongoDatabaseName() {
+        final String db = this.config.getProperty("mongodb_database");
+        return (db != null) ? db : "Alison";
     }
 }
