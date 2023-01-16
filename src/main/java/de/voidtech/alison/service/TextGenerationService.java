@@ -99,25 +99,56 @@ public class TextGenerationService {
     }
 
     public boolean dataIsAvailableForID(String id) {
-        return true;
+        return getWordCountForCollection(id) > 0;
     }
 
     public long getWordCount() {
-        return 0;
+        MongoCollection<Document> collection = mongoDb.getCollection("word_pairs");
+        return collection.countDocuments();
     }
 
     public long getModelCount() {
-        return 0;
+        MongoCollection<Document> collection = mongoDb.getCollection("word_pairs");
+        long count = 0;
+        MongoCursor<String> cursor = collection.distinct("collection", String.class).iterator();
+        while (cursor.hasNext()) {
+            count++;
+        }
+        return count;
     }
 
     public Map<String, Long> getTopFiveWords(String id) {
+        //TODO: Implement this
         return new HashMap<>();
     }
 
     public long getWordCountForCollection(String id) {
-        return 0;
+        Bson query = Filters.eq("collection", id);
+        MongoCollection<Document> collection = mongoDb.getCollection("word_pairs");
+        return collection.countDocuments(query);
     }
 
     public void delete(String id) {
+        Bson query = Filters.eq("collection", id);
+        MongoCollection<Document> collection = mongoDb.getCollection("word_pairs");
+        collection.deleteMany(query);
+    }
+
+    public List<String> getAllWords(String pack) {
+        MongoCollection<Document> collection = mongoDb.getCollection("word_pairs");
+        List<Bson> aggregates = new ArrayList<>();
+        aggregates.add(Aggregates.match(Filters.eq("collection", pack)));
+
+        MongoCursor<Document> cursor = collection.aggregate(aggregates).iterator();
+        List<String> result = new ArrayList<>();
+
+        try {
+            while (cursor.hasNext()) {
+                result.add(cursor.next().getString("word"));
+            }
+        } finally {
+            cursor.close();
+        }
+        return result;
     }
 }
