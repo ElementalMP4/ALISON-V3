@@ -6,6 +6,7 @@ import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,8 +39,9 @@ public class TextGenerationService {
             if (result.length() + (word + " ").length() > length) break;
             result.append(word).append(" ");
             List<Document> potentials = getWordList(wordCollectionName, nextWord);
-            word = getRandomDocumentField(potentials, "word");
-            nextWord = getRandomDocumentField(potentials, "next");
+            Document document = getRandomDocument(potentials);
+            word = document.getString("word");
+            nextWord = document.getString("next");
         }
         if (result.length() + word.length() <= length) result.append(word);
         return result.toString().replaceAll("<[^>]*>", "").replaceAll("@", "``@``");
@@ -65,8 +67,8 @@ public class TextGenerationService {
         return generateMessage(wordCollection, PROMPT_LENGTH);
     }
 
-    private String getRandomDocumentField(List<Document> potentials, String field) {
-        return potentials.get(new Random().nextInt(potentials.size())).getString(field);
+    private Document getRandomDocument(List<Document> potentials) {
+        return potentials.get(new Random().nextInt(potentials.size()));
     }
 
     private List<Document> getWordList(String wordCollectionName, String nextWord) {
@@ -150,5 +152,22 @@ public class TextGenerationService {
             cursor.close();
         }
         return result;
+    }
+
+    public void learn(String ID, String contentRaw) {
+        final List<String> tokens = Arrays.asList(contentRaw.split(" "));
+        for (int i = 0; i < tokens.size(); ++i) {
+            if (i == tokens.size() - 1) saveWord(ID, tokens.get(i), "StopWord");
+            else saveWord(ID, tokens.get(i), tokens.get(i + 1));
+        }
+    }
+
+    private void saveWord(String pack, String word, String next) {
+        MongoCollection<Document> collection = mongoDb.getCollection("word_pairs");
+        collection.insertOne(new Document()
+                .append("_id", new ObjectId())
+                .append("word", word)
+                .append("next", next)
+                .append("collection", pack));
     }
 }

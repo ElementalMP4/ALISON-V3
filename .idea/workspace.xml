@@ -5,50 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a7fa86ab-24e1-453d-9171-ee5e99b41b69" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/CommandCategory.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/CommandContext.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/generation/ConverseCommand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/generation/ImitateCommand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/generation/IngestCommand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/generation/NicknameCommand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/generation/QuoteCommand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/generation/SearchCommand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/information/HelpCommand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/information/InfoCommand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/information/MyStatsCommand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/information/PingCommand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/privacy/ClearCommand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/privacy/IgnoredChannelsCommand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/privacy/OptInCommand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/privacy/OptOutCommand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/sentiment/HowHotCommand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/sentiment/HowToxicAmICommand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/sentiment/HowToxicIsThisServerCommand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/sentiment/LeaderboardCommand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/entities/AlisonWord.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/entities/Sentiment.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/AnalysisService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/BrowserService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/ClaireService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/IngestService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/PrivacyService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/TextGenerationService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/util/ButtonConsumer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/util/ButtonListener.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/util/ParsingUtils.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/util/ResourceLoader.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/util/Stopwatch.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/common-words.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/negative-words.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/positive-words.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/AbstractCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/AbstractCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/generation/IngestCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/generation/IngestCommand.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/listeners/MessageListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/listeners/MessageListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/ConfigService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/ConfigService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/ClaireService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/ClaireService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/IngestService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/IngestService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/MongoDBService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/MongoDBService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/ThreadManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/ThreadManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/WebhookManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/WebhookManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/TextGenerationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/TextGenerationService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,7 +51,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.V3 BAYBEE">
     <configuration name="V3 BAYBEE" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="main.java.de.voidtech.alison.Alison" />
       <module name="Alison" />
@@ -94,6 +59,36 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="Alison [clean,package]" type="MavenRunConfiguration" factoryName="Maven" nameIsGenerated="true">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings" />
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list>
+                <option value="clean" />
+                <option value="package" />
+              </list>
+            </option>
+            <option name="pomFileName" />
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="$PROJECT_DIR$" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Application.V3 BAYBEE" />
+      <item itemvalue="Maven.Alison [clean,package]" />
+    </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">

@@ -1,5 +1,6 @@
 package main.java.de.voidtech.alison.service;
 
+import com.mongodb.Mongo;
 import com.mongodb.client.MongoCollection;
 import main.java.de.voidtech.alison.commands.CommandContext;
 import main.java.de.voidtech.alison.entities.AlisonWord;
@@ -12,6 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,4 +70,48 @@ public class IngestService {
         return words;
     }
 
+    public void ingestClaireDB() {
+        DatabaseInterface db = new DatabaseInterface();
+        ResultSet rs = db.getAllMessagePairs();
+        MongoCollection<Document> claireCollection = mongoDBService.getCollection("claire_heap");
+
+        try {
+            while(rs.next()) {
+                claireCollection.insertOne(new Document()
+                        .append("_id", new ObjectId())
+                        .append("message", rs.getString("message").replaceAll("@", "``@``"))
+                        .append("reply", rs.getString("reply").replaceAll("@", "``@``")));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private class DatabaseInterface {
+        private Connection connection;
+
+        public ResultSet getAllMessagePairs() {
+            return queryDatabase("SELECT * FROM MessagePairs");
+        }
+
+
+        public DatabaseInterface() {
+            try {
+                connection = DriverManager.getConnection("jdbc:sqlite:Alison.db");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        private ResultSet queryDatabase(String query) {
+            try {
+                Statement statement = connection.createStatement();
+                return statement.executeQuery(query);
+            } catch (SQLException e) {
+                LOGGER.log(Level.SEVERE, "An SQL Exception has occurred: " + e.getMessage());
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
 }

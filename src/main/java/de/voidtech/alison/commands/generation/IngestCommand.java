@@ -21,8 +21,12 @@ public class IngestCommand extends AbstractCommand {
 
     @Override
     public void execute(CommandContext commandContext, List<String> args) {
-        if (commandContext.getAuthor().getId().equals(config.getMaster()))
+        if (commandContext.getAuthor().getId().equals(config.getMaster())) {
             ingestService.ingestFiles(commandContext);
+            commandContext.reply("Ingested models. Loading Claire data...");
+            ingestService.ingestClaireDB();
+            commandContext.reply("All done :D");
+        }
     }
 
     @Override

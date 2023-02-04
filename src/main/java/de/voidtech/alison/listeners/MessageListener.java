@@ -1,9 +1,9 @@
 package main.java.de.voidtech.alison.listeners;
 
+import main.java.de.voidtech.alison.Alison;
 import main.java.de.voidtech.alison.commands.AbstractCommand;
 import main.java.de.voidtech.alison.commands.CommandContext;
-import main.java.de.voidtech.alison.service.ConfigService;
-import main.java.de.voidtech.alison.service.PrivacyService;
+import main.java.de.voidtech.alison.service.*;
 import main.java.de.voidtech.alison.util.LevenshteinCalculator;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -36,6 +36,15 @@ public class MessageListener implements EventListener {
     @Autowired
     private PrivacyService privacyService;
 
+    @Autowired
+    private TextGenerationService textGenerationService;
+
+    @Autowired
+    private ClaireService claireService;
+
+    @Autowired
+    private AnalysisService analysisService;
+
     public static final Logger LOGGER = Logger.getLogger(MessageListener.class.getSimpleName());
     private static final int LEVENSHTEIN_THRESHOLD = 3;
 
@@ -58,7 +67,7 @@ public class MessageListener implements EventListener {
         if (message.getAuthor().getId().equals(message.getJDA().getSelfUser().getId())) return;
         String prefix = config.getDefaultPrefix();
         if (!shouldHandleAsChatCommand(prefix, message)) {
-            //performNonCommandMessageActions(message);
+            performNonCommandMessageActions(message);
             return;
         }
 
@@ -67,24 +76,23 @@ public class MessageListener implements EventListener {
         else if (message.getMember().getPermissions().contains(Permission.MANAGE_SERVER)) doTheCommanding(message, prefix);
     }
 
-    /*
+
     private void performNonCommandMessageActions(Message message) {
-        if (message.getChannel().getType().equals(ChannelType.PRIVATE)) {
-            ReplyManager.replyToMessage(message);
-            return;
-        }
-        if (PrivacyManager.channelIsIgnored(message.getChannel().getId(), message.getGuild().getId()))
+        //if (message.getChannel().getType().equals(ChannelType.PRIVATE)) {
+            //ReplyManager.replyToMessage(message);
+            //return;
+        //}
+        if (privacyService.channelIsIgnored(message.getChannel().getId(), message.getGuild().getId()))
             return;
         if (message.getContentRaw().equals(""))
             return;
-        if (PrivacyManager.userHasOptedOut(message.getAuthor().getId()))
+        if (privacyService.userHasOptedOut(message.getAuthor().getId()))
             return;
-        if (Alison.getConfig().continuousLearningEnabled()) ReplyManager.addMessages(message);
-        TextAnalytics.respondToAlisonMention(message);
-        ModelManager.getModel(message.getAuthor().getId()).learn(message.getContentRaw());
-        ReplyManager.replyToMessage(message);
+        claireService.addMessages(message);
+        analysisService.respondToAlisonMention(message);
+        textGenerationService.learn(message.getAuthor().getId(), message.getContentRaw());
+        claireService.replyToMessage(message);
     }
-    */
 
     private void doTheCommanding(Message message, String prefix) {
         String messageContent = message.getContentRaw().substring(prefix.length());
