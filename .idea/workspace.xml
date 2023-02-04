@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="a7fa86ab-24e1-453d-9171-ee5e99b41b69" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/ConfigService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/ConfigService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/listeners/MessageListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/listeners/MessageListener.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -78,10 +78,10 @@ public class MessageListener implements EventListener {
 
 
     private void performNonCommandMessageActions(Message message) {
-        //if (message.getChannel().getType().equals(ChannelType.PRIVATE)) {
-            //ReplyManager.replyToMessage(message);
-            //return;
-        //}
+        if (message.getChannel().getType().equals(ChannelType.PRIVATE)) {
+            claireService.replyToMessage(message);
+            return;
+        }
         if (privacyService.channelIsIgnored(message.getChannel().getId(), message.getGuild().getId()))
             return;
         if (message.getContentRaw().equals(""))
