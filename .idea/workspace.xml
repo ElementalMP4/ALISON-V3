@@ -5,15 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a7fa86ab-24e1-453d-9171-ee5e99b41b69" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/generation/IngestCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/generation/IngestCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/listeners/MessageListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/listeners/MessageListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/ClaireService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/ClaireService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/IngestService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/IngestService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/MongoDBService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/MongoDBService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/TextGenerationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/TextGenerationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/ConfigService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/ConfigService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,7 +44,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager" selected="Application.V3 BAYBEE">
+  <component name="RunManager" selected="Maven.Alison [clean,package]">
     <configuration name="V3 BAYBEE" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="main.java.de.voidtech.alison.Alison" />
       <module name="Alison" />

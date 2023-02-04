@@ -72,7 +72,7 @@ public class ConfigService
     
     public String getMongoConnectionURL() {
         final String dbURL = this.config.getProperty("mongodb_url");
-        return (dbURL != null) ? dbURL : "mongodb://localhost:27017/?maxPoolSize=20&w=majority";
+        return (dbURL != null) ? dbURL : "mongodb://localhost:27017/" + getMongoDatabaseName() + "?maxPoolSize=20&w=majority";
     }
 
     public String getMongoDatabaseName() {
