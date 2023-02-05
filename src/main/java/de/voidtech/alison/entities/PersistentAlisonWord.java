@@ -1,5 +1,7 @@
 package main.java.de.voidtech.alison.entities;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 
 @Entity
@@ -14,9 +16,11 @@ public class PersistentAlisonWord
     private String collection;
 
     @Column
+    @Type(type = "org.hibernate.type.TextType")
     private String word;
 
     @Column
+    @Type(type = "org.hibernate.type.TextType")
     private String next;
 
     @Deprecated
