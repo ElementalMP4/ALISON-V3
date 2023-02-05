@@ -31,13 +31,12 @@ public class ClaireService {
         List<String> existingResponseSentences = getExistingResponseSentences(message);
         if (existingResponseSentences.isEmpty()) return "Huh";
         List<ClaireWord> tokenizedWords = new ArrayList<>();
-        List<ClaireWord> finalWordList = new ArrayList<>();
         for (String response : existingResponseSentences) {
             tokenizedWords = Stream.concat(tokenizedWords.stream(),
                     stringToClaireWords(response).stream())
                     .collect(Collectors.toList());
         }
-        String reply = createSentenceUnderLength(finalWordList, length);
+        String reply = createSentenceUnderLength(tokenizedWords, length);
         return reply == null ? "Huh" : reply;
     }
 
@@ -86,7 +85,7 @@ public class ClaireService {
         for (String word : words) {
             try (Session session = sessionFactory.openSession()) {
                 final List<PersistentClairePair> list = (List<PersistentClairePair>) session
-                        .createQuery("FROM PersistentClairePair WHERE UPPER(message) LIKE UPPER(:word)")
+                        .createQuery("FROM PersistentClairePair WHERE message LIKE :word")
                         .setParameter("word", "%" + word + "%")
                         .list();
                 for (PersistentClairePair pair : list) {
