@@ -5,7 +5,6 @@ import main.java.de.voidtech.alison.annotations.Command;
 import main.java.de.voidtech.alison.commands.AbstractCommand;
 import main.java.de.voidtech.alison.commands.CommandCategory;
 import main.java.de.voidtech.alison.commands.CommandContext;
-import main.java.de.voidtech.alison.service.PrivacyService;
 import main.java.de.voidtech.alison.service.TextGenerationService;
 import main.java.de.voidtech.alison.util.ButtonListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,11 +65,6 @@ public class ClearCommand extends AbstractCommand {
 	@Override
 	public CommandCategory getCommandCategory() {
 		return CommandCategory.PRIVACY;
-	}
-
-	@Override
-	public boolean isLongCommand() {
-		return false;
 	}
 
 }

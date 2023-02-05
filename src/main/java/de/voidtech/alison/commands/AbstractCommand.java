@@ -1,8 +1,8 @@
 package main.java.de.voidtech.alison.commands;
 
-import main.java.de.voidtech.alison.util.Stopwatch;
 import main.java.de.voidtech.alison.listeners.MessageListener;
 import main.java.de.voidtech.alison.service.ThreadManager;
+import main.java.de.voidtech.alison.util.Stopwatch;
 import net.dv8tion.jda.api.entities.ChannelType;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,7 +31,6 @@ public abstract class AbstractCommand {
         Runnable commandThread = () -> {
             Stopwatch stopwatch = new Stopwatch().start();
             LOGGER.log(Level.INFO, "Running command: " + this.getName() + " by " + context.getAuthor().getAsTag());
-            if (this.isLongCommand()) context.getMessage().getChannel().sendTyping().complete();
             execute(context, args);
             LOGGER.log(Level.INFO, "Command " + this.getName() + " by " + context.getAuthor().getAsTag()
                     + " Took " + stopwatch.stop().getTime() + "ms");
@@ -47,5 +46,4 @@ public abstract class AbstractCommand {
     public abstract CommandCategory getCommandCategory();
     public abstract boolean isDmCapable();
     public abstract boolean requiresArguments();
-    public abstract boolean isLongCommand();
 }

@@ -1,26 +1,27 @@
 package main.java.de.voidtech.alison.service;
 
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
-import main.java.de.voidtech.alison.entities.AlisonWord;
+import main.java.de.voidtech.alison.entities.ClaireWord;
+import main.java.de.voidtech.alison.entities.PersistentClairePair;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
-import org.bson.Document;
-import org.bson.types.ObjectId;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static com.mongodb.client.model.Filters.regex;
 
 @Service
 public class ClaireService {
 
     @Autowired
-    private MongoDBService mongoDB;
+    private SessionFactory sessionFactory;
 
     public String createReply(String prompt) {
         return createReply(prompt, TextGenerationService.CLAIRE_LENGTH);
@@ -29,90 +30,91 @@ public class ClaireService {
     public String createReply(String message, int length) {
         List<String> existingResponseSentences = getExistingResponseSentences(message);
         if (existingResponseSentences.isEmpty()) return "Huh";
-        List<AlisonWord> tokenizedWords = new ArrayList<>();
-        List<AlisonWord> finalWordList = new ArrayList<>();
+        List<ClaireWord> tokenizedWords = new ArrayList<>();
+        List<ClaireWord> finalWordList = new ArrayList<>();
         for (String response : existingResponseSentences) {
             tokenizedWords = Stream.concat(tokenizedWords.stream(),
-                    stringToAlisonWords(response).stream())
+                    stringToClaireWords(response).stream())
                     .collect(Collectors.toList());
         }
-        for (AlisonWord word : tokenizedWords) {
-            AlisonWord wordInModel = finalWordList.stream()
-                    .filter(w -> w.getWord().equals(word.getWord()) && w.getNext().equals(word.getNext()))
-                    .findFirst()
-                    .orElse(null);
-            if (wordInModel == null) finalWordList.add(word);
-            else wordInModel.incrementCount();
-        }
-        String reply = createProbableSentenceUnderLength(finalWordList, length);
+        String reply = createSentenceUnderLength(finalWordList, length);
         return reply == null ? "Huh" : reply;
     }
 
-    public String createProbableSentenceUnderLength(List<AlisonWord> words, int length) {
+    public String createSentenceUnderLength(List<ClaireWord> words, int length) {
         if (words.isEmpty()) return null;
         StringBuilder result = new StringBuilder();
-        AlisonWord next = getRandomStartWord(words);
+        ClaireWord next = getRandomStartWord(words);
         if (next == null) return null;
         while (next.isStopWord()) {
             if (result.length() + (next.getWord() + " ").length() > length) break;
             result.append(next.getWord()).append(" ");
-            List<AlisonWord> potentials = getWordList(words, next.getNext());
-            next = getMostLikely(potentials);
+            List<ClaireWord> potentials = getWordList(words, next.getNext());
+            next = getRandomFromPotentials(potentials);
         }
         if (result.length() + next.getWord().length() <= length) result.append(next.getWord());
         return result.toString();
     }
 
-    private AlisonWord getMostLikely(List<AlisonWord> potentials) {
-        return potentials.stream()
-                .sorted(Comparator.comparing(AlisonWord::getFrequency))
-                .collect(Collectors.toList()).get(0);
+    private ClaireWord getRandomFromPotentials(List<ClaireWord> potentials) {
+        return potentials.get(new Random().nextInt(potentials.size()));
     }
 
-    private AlisonWord getRandomStartWord(List<AlisonWord> words) {
+    private ClaireWord getRandomStartWord(List<ClaireWord> words) {
         if (words.size() < 2) return null;
         else return words.get(new Random().nextInt(words.size() - 1));
     }
 
-    private List<AlisonWord> getWordList(List<AlisonWord> words, String wordToFind) {
+    private List<ClaireWord> getWordList(List<ClaireWord> words, String wordToFind) {
         return words.stream().filter(word -> word.getWord().equals(wordToFind)).collect(Collectors.toList());
     }
 
-    private List<AlisonWord> stringToAlisonWords(String content) {
+    private List<ClaireWord> stringToClaireWords(String content) {
         List<String> tokens = Arrays.asList(content.split(" "));
-        List<AlisonWord> words = new ArrayList<>();
+        List<ClaireWord> words = new ArrayList<>();
         for (int i = 0; i < tokens.size(); ++i) {
-            if (i == tokens.size() - 1) words.add(new AlisonWord(tokens.get(i), "StopWord"));
-            else words.add(new AlisonWord(tokens.get(i), tokens.get(i + 1)));
+            if (i == tokens.size() - 1) words.add(new ClaireWord(tokens.get(i), "StopWord"));
+            else words.add(new ClaireWord(tokens.get(i), tokens.get(i + 1)));
         }
         return words;
     }
 
+    @SuppressWarnings("unchecked")
     private List<String> getExistingResponseSentences(String message) {
-        MongoCollection<Document> claireCollection = mongoDB.getCollection("claire_heap");
-        List<String> words = Arrays.asList(message.split(" "));
+        String[] words = message.split(" ");
         List<String> sentencePool = new ArrayList<>();
         for (String word : words) {
-            MongoCursor<Document> documentCursor = claireCollection.find(regex("message", word)).iterator();
-            while (documentCursor.hasNext()) {
-                sentencePool.add(documentCursor.next().getString("reply"));
+            try (Session session = sessionFactory.openSession()) {
+                final List<PersistentClairePair> list = (List<PersistentClairePair>) session
+                        .createQuery("FROM PersistentClairePair WHERE UPPER(message) ILIKE UPPER(%:word%)")
+                        .setParameter("word", word)
+                        .list();
+                for (PersistentClairePair pair : list) {
+                    sentencePool.add(pair.getReply());
+                }
             }
         }
         return sentencePool;
     }
 
     public long getConversationCount() {
-        MongoCollection<Document> claireCollection = mongoDB.getCollection("claire_heap");
-        return claireCollection.countDocuments();
+        try(Session session = sessionFactory.openSession())
+        {
+            @SuppressWarnings("rawtypes")
+            Query query = session.createQuery("SELECT COUNT(*) FROM PersistentClairePair");
+            long count = (long) query.uniqueResult();
+            session.close();
+            return count;
+        }
     }
 
     public void addMessages(Message message) {
         if (messageCanBeAdded(message)) {
-            MongoCollection<Document> claireCollection = mongoDB.getCollection("claire_heap");
-            claireCollection.insertOne(new Document()
-                    .append("_id", new ObjectId())
-                    .append("message", message.getReferencedMessage().getContentRaw().replaceAll("@", "``@``"))
-                    .append("reply", message.getContentRaw().replaceAll("@", "``@``")));
+            try (Session session = sessionFactory.openSession()) {
+                session.getTransaction().begin();
+                session.saveOrUpdate(new PersistentClairePair(message.getReferencedMessage().getContentDisplay(), message.getContentDisplay()));
+                session.getTransaction().commit();
+            }
         }
     }
 

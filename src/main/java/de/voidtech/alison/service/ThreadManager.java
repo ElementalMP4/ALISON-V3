@@ -1,10 +1,11 @@
 package main.java.de.voidtech.alison.service;
 
-import java.util.concurrent.Executors;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
-import java.util.concurrent.ExecutorService;
-import java.util.HashMap;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
 public class ThreadManager

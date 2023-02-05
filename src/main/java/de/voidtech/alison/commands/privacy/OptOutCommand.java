@@ -79,9 +79,4 @@ public class OptOutCommand extends AbstractCommand {
 		return CommandCategory.PRIVACY;
 	}
 
-	@Override
-	public boolean isLongCommand() {
-		return false;
-	}
-
 }

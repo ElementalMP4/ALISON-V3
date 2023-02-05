@@ -4,6 +4,8 @@ import main.java.de.voidtech.alison.annotations.Command;
 import main.java.de.voidtech.alison.commands.AbstractCommand;
 import main.java.de.voidtech.alison.commands.CommandCategory;
 import main.java.de.voidtech.alison.commands.CommandContext;
+import main.java.de.voidtech.alison.entities.Sentiment;
+import main.java.de.voidtech.alison.service.AnalysisService;
 import main.java.de.voidtech.alison.service.PrivacyService;
 import main.java.de.voidtech.alison.service.TextGenerationService;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -14,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Command
 public class MyStatsCommand extends AbstractCommand {
@@ -25,6 +25,9 @@ public class MyStatsCommand extends AbstractCommand {
 
 	@Autowired
 	private TextGenerationService textGenerationService;
+
+	@Autowired
+	private AnalysisService analysisService;
 
 	@Override
 	public void execute(CommandContext context, List<String> args) {
@@ -47,16 +50,14 @@ public class MyStatsCommand extends AbstractCommand {
 	}
 
 	private MessageEmbed createStatsEmbed(User user) {
-		Map<String, Long> topFive = textGenerationService.getTopFiveWords(user.getId());
+		Sentiment sentiment = analysisService.analyseCollection(user.getId());
         long wordCount = textGenerationService.getWordCountForCollection(user.getId());
-        String topFiveFormatted = topFive.entrySet().stream()
-        		.map(e -> e.getKey() + " - " + e.getValue()).collect(Collectors.joining("\n"));
         EmbedBuilder statsEmbedBuilder = new EmbedBuilder()
         		.setColor(Color.ORANGE)
         		.setTitle("Stats for " + user.getAsTag())
         		.setThumbnail(user.getAvatarUrl())
-        		.addField("Top 5 words", "```\n" + topFiveFormatted + "\n```", false)
-        		.addField("Total Words", "```\n" + wordCount + "\n```", false);
+        		.addField("Total Words", "```\n" + wordCount + "\n```", false)
+				.addField("Sentiment Score", "```\n" + sentiment.getAdjustedScore() + "\n```", false);
 		return statsEmbedBuilder.build();
 	}
 
@@ -68,12 +69,12 @@ public class MyStatsCommand extends AbstractCommand {
 	@Override
 	public String getUsage() {
 		return "mystats\n"
-				+ "mystats [user mention or ID]";
+				+ "mystats [user mention]";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Shows some stats about your stored data, as well as your 5 most commonly used words!";
+		return "Shows some stats about you or someone else";
 	}
 
 	@Override
@@ -94,11 +95,6 @@ public class MyStatsCommand extends AbstractCommand {
 	@Override
 	public CommandCategory getCommandCategory() {
 		return CommandCategory.INFORMATION;
-	}
-
-	@Override
-	public boolean isLongCommand() {
-		return false;
 	}
 
 }

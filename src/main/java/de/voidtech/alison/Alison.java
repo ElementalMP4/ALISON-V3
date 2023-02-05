@@ -15,23 +15,7 @@
 
 package main.java.de.voidtech.alison;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.security.auth.login.LoginException;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.annotation.Order;
-
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-
 import main.java.de.voidtech.alison.listeners.MessageListener;
 import main.java.de.voidtech.alison.listeners.ReadyListener;
 import main.java.de.voidtech.alison.service.ConfigService;
@@ -42,9 +26,19 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
+
+import javax.security.auth.login.LoginException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
 
 @SpringBootApplication
-@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 public class Alison
 {
     @Bean
@@ -58,13 +52,13 @@ public class Alison
         		.setStatus(OnlineStatus.IDLE)
         		.setActivity(Activity.competing("the game"))
         		.setCompression(Compression.NONE)
-        		.addEventListeners(new Object[] { msgListener, readyListener, waiter })
+        		.addEventListeners(msgListener, readyListener, waiter)
         		.build()
         		.awaitReady();
     }
     
     private List<GatewayIntent> getNonPrivilegedIntents() {
-        final List<GatewayIntent> gatewayIntents = new ArrayList<GatewayIntent>(Arrays.asList(GatewayIntent.values()));
+        final List<GatewayIntent> gatewayIntents = new ArrayList<>(Arrays.asList(GatewayIntent.values()));
         gatewayIntents.remove(GatewayIntent.GUILD_PRESENCES);
         return gatewayIntents;
     }
@@ -75,6 +69,16 @@ public class Alison
     }
     
     public static void main(final String[] args) {
-        SpringApplication.run(Alison.class, args);
+        final SpringApplication springApp = new SpringApplication(Alison.class);
+        final ConfigService configService = new ConfigService();
+        final Properties properties = new Properties();
+        properties.put("spring.datasource.url", configService.getConnectionURL());
+        properties.put("spring.datasource.username", configService.getDBUser());
+        properties.put("spring.datasource.password", configService.getDBPassword());
+        properties.put("spring.jpa.properties.hibernate.dialect", configService.getHibernateDialect());
+        properties.put("jdbc.driver", configService.getDriver());
+        properties.put("spring.jpa.hibernate.ddl-auto", "update");
+        springApp.setDefaultProperties(properties);
+        springApp.run(args);
     }
 }

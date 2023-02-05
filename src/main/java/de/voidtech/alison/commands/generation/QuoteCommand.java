@@ -120,9 +120,4 @@ public class QuoteCommand extends AbstractCommand {
 		return CommandCategory.TEXT_GENERATION;
 	}
 
-	@Override
-	public boolean isLongCommand() {
-		return true;
-	}
-
 }

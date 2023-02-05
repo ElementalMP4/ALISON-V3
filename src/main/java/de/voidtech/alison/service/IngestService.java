@@ -1,11 +1,11 @@
 package main.java.de.voidtech.alison.service;
 
-import com.mongodb.Mongo;
-import com.mongodb.client.MongoCollection;
 import main.java.de.voidtech.alison.commands.CommandContext;
 import main.java.de.voidtech.alison.entities.AlisonWord;
-import org.bson.Document;
-import org.bson.types.ObjectId;
+import main.java.de.voidtech.alison.entities.PersistentAlisonWord;
+import main.java.de.voidtech.alison.entities.PersistentClairePair;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 public class IngestService {
 
     @Autowired
-    private MongoDBService mongoDBService;
+    private SessionFactory sessionFactory;
 
     public static final Logger LOGGER = Logger.getLogger(IngestService.class.getSimpleName());
 
@@ -37,23 +37,23 @@ public class IngestService {
             dataMap.put(modelFile.getName(), load(modelFile.getName()));
             LOGGER.log(Level.INFO, "Loaded model " + modelFile.getName());
         }
+
         context.reply("Model files loaded. Ingesting...");
-        MongoCollection<Document> collection = mongoDBService.getCollection("word_pairs");
 
         for (String model : dataMap.keySet()) {
             List<AlisonWord> words = dataMap.get(model);
             for (AlisonWord word : words) {
                 for (int i = 0; i < word.getFrequency(); i++) {
-                    collection.insertOne(new Document()
-                            .append("_id", new ObjectId())
-                            .append("word", word.getWord())
-                            .append("next", word.getNext())
-                            .append("collection", model));
+                    try (Session session = sessionFactory.openSession()) {
+                        session.getTransaction().begin();
+                        session.saveOrUpdate(new PersistentAlisonWord(model, word.getWord(), word.getNext()));
+                        session.getTransaction().commit();
+                    }
                 }
             }
             LOGGER.log(Level.INFO, "Ingested model " + model);
-            context.reply("Ingested model " + model);
         }
+        context.reply("Finished ingesting ALISON models :D");
     }
 
     @SuppressWarnings("unchecked")
@@ -70,21 +70,22 @@ public class IngestService {
         return words;
     }
 
-    public void ingestClaireDB() {
+    public void ingestClaireDB(CommandContext commandContext) {
+        commandContext.reply("Loading CLAIRE data...");
         DatabaseInterface db = new DatabaseInterface();
         ResultSet rs = db.getAllMessagePairs();
-        MongoCollection<Document> claireCollection = mongoDBService.getCollection("claire_heap");
-
         try {
             while(rs.next()) {
-                claireCollection.insertOne(new Document()
-                        .append("_id", new ObjectId())
-                        .append("message", rs.getString("message").replaceAll("@", "``@``"))
-                        .append("reply", rs.getString("reply").replaceAll("@", "``@``")));
+                try (Session session = sessionFactory.openSession()) {
+                    session.getTransaction().begin();
+                    session.saveOrUpdate(new PersistentClairePair(rs.getString("message"), rs.getString("reply")));
+                    session.getTransaction().commit();
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        commandContext.reply("Finished loading CLAIRE data :D");
     }
 
     private class DatabaseInterface {

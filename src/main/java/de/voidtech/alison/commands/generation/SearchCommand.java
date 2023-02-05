@@ -109,10 +109,4 @@ public class SearchCommand extends AbstractCommand {
 		return false;
 	}
 
-	@Override
-	public boolean isLongCommand() {
-		return true;
-	}
-
-
 }

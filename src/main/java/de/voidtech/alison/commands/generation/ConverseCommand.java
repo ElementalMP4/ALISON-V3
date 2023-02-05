@@ -137,8 +137,4 @@ public class ConverseCommand extends AbstractCommand {
         return false;
     }
 
-    @Override
-    public boolean isLongCommand() {
-        return true;
-    }
 }

@@ -1,6 +1,5 @@
 package main.java.de.voidtech.alison.listeners;
 
-import main.java.de.voidtech.alison.Alison;
 import main.java.de.voidtech.alison.commands.AbstractCommand;
 import main.java.de.voidtech.alison.commands.CommandContext;
 import main.java.de.voidtech.alison.service.*;

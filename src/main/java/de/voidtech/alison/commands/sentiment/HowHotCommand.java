@@ -145,10 +145,4 @@ public class HowHotCommand extends AbstractCommand {
 	public boolean requiresArguments() {
 		return false;
 	}
-
-	@Override
-	public boolean isLongCommand() {
-		return false;
-	}
-
 }

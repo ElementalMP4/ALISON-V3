@@ -1,22 +1,22 @@
 package main.java.de.voidtech.alison.service;
 
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.model.Aggregates;
-import com.mongodb.client.model.Filters;
-import org.bson.Document;
-import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
+import main.java.de.voidtech.alison.entities.PersistentAlisonWord;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 public class TextGenerationService {
 
     @Autowired
-    private MongoDBService mongoDb;
+    private SessionFactory sessionFactory;
 
     public static final int CLAIRE_LENGTH = 1000;
     public static final int NICKNAME_LENGTH = 32;
@@ -27,23 +27,15 @@ public class TextGenerationService {
 
     private String generateMessage(String wordCollectionName, int length) {
         StringBuilder result = new StringBuilder();
-
-        Document databaseRecord = getRandomStartWord(wordCollectionName);
-
-        if (databaseRecord == null) return null;
-
-        String word = databaseRecord.getString("word");
-        String nextWord = databaseRecord.getString("next");
-
-        while (!nextWord.equals("StopWord")) {
-            if (result.length() + (word + " ").length() > length) break;
-            result.append(word).append(" ");
-            List<Document> potentials = getWordList(wordCollectionName, nextWord);
-            Document document = getRandomDocument(potentials);
-            word = document.getString("word");
-            nextWord = document.getString("next");
+        PersistentAlisonWord alisonWord = getRandomStartWord(wordCollectionName);
+        if (alisonWord == null) return null;
+        while (!alisonWord.isStopWord()) {
+            if (result.length() + (alisonWord.getWord() + " ").length() > length) break;
+            result.append(alisonWord.getWord()).append(" ");
+            List<PersistentAlisonWord> potentials = getWordList(wordCollectionName, alisonWord.getNext());
+            alisonWord = getRandomFromPotentials(potentials);
         }
-        if (result.length() + word.length() <= length) result.append(word);
+        if (result.length() + alisonWord.getWord().length() <= length) result.append(alisonWord.getWord());
         return result.toString().replaceAll("<[^>]*>", "").replaceAll("@", "``@``");
     }
 
@@ -67,37 +59,31 @@ public class TextGenerationService {
         return generateMessage(wordCollection, PROMPT_LENGTH);
     }
 
-    private Document getRandomDocument(List<Document> potentials) {
+    private PersistentAlisonWord getRandomFromPotentials(List<PersistentAlisonWord> potentials) {
         return potentials.get(new Random().nextInt(potentials.size()));
     }
 
-    private List<Document> getWordList(String wordCollectionName, String nextWord) {
-        MongoCollection<Document> collection = mongoDb.getCollection("word_pairs");
-        List<Bson> aggregates = new ArrayList<>();
-        aggregates.add(Aggregates.match(Filters.eq("word", nextWord)));
-        if (!wordCollectionName.equals("SEARCH_ALL_COLLECTIONS"))
-            aggregates.add(Aggregates.match(Filters.eq("collection", wordCollectionName)));
-
-        MongoCursor<Document> cursor = collection.aggregate(aggregates).iterator();
-        List<Document> result = new ArrayList<>();
-
-        try {
-            while (cursor.hasNext()) {
-                result.add(cursor.next());
-            }
-        } finally {
-            cursor.close();
+    @SuppressWarnings("unchecked")
+    public List<PersistentAlisonWord> getWordList(final String pack, final String word) {
+        try (Session session = sessionFactory.openSession()) {
+            final List<PersistentAlisonWord> list = (List<PersistentAlisonWord>) session
+                    .createQuery("FROM PersistentAlisonWord WHERE collection = :pack AND word = :word")
+                    .setParameter("pack", pack)
+                    .setParameter("word", word)
+                    .list();
+            return list;
         }
-        return result;
     }
 
-    private Document getRandomStartWord(String wordCollectionName) {
-        MongoCollection<Document> collection = mongoDb.getCollection("word_pairs");
-        List<Bson> aggregates = new ArrayList<>();
-        aggregates.add(Aggregates.sample(1));
-        if (!wordCollectionName.equals("SEARCH_ALL_COLLECTIONS"))
-            aggregates.add(Aggregates.match(Filters.eq("collection", wordCollectionName)));
-        return collection.aggregate(aggregates).first();
+    public PersistentAlisonWord getRandomStartWord(final String pack) {
+        try (Session session = sessionFactory.openSession()) {
+            final PersistentAlisonWord alisonWord = (PersistentAlisonWord) session
+                    .createQuery("FROM PersistentAlisonWord WHERE collection = :pack ORDER BY RANDOM()")
+                    .setParameter("pack", pack)
+                    .setMaxResults(1)
+                    .uniqueResult();
+            return alisonWord;
+        }
     }
 
     public boolean dataIsAvailableForID(String id) {
@@ -105,53 +91,58 @@ public class TextGenerationService {
     }
 
     public long getWordCount() {
-        MongoCollection<Document> collection = mongoDb.getCollection("word_pairs");
-        return collection.countDocuments();
+        try(Session session = sessionFactory.openSession())
+        {
+            @SuppressWarnings("rawtypes")
+            Query query = session.createQuery("SELECT COUNT(*) FROM PersistentAlisonWord");
+            long count = (long) query.uniqueResult();
+            session.close();
+            return count;
+        }
     }
 
     public long getModelCount() {
-        MongoCollection<Document> collection = mongoDb.getCollection("word_pairs");
-        long count = 0;
-        MongoCursor<String> cursor = collection.distinct("collection", String.class).iterator();
-        while (cursor.hasNext()) {
-            count++;
+        try(Session session = sessionFactory.openSession())
+        {
+            @SuppressWarnings("rawtypes")
+            Query query = session.createQuery("SELECT COUNT(DISTINCT collection) FROM PersistentAlisonWord");
+            long count = (long) query.uniqueResult();
+            session.close();
+            return count;
         }
-        return count;
-    }
-
-    public Map<String, Long> getTopFiveWords(String id) {
-        //TODO: Implement this
-        return new HashMap<>();
     }
 
     public long getWordCountForCollection(String id) {
-        Bson query = Filters.eq("collection", id);
-        MongoCollection<Document> collection = mongoDb.getCollection("word_pairs");
-        return collection.countDocuments(query);
+        try (Session session = sessionFactory.openSession()) {
+            @SuppressWarnings("rawtypes")
+            Query query = session
+                    .createQuery("SELECT COUNT(*) FROM PersistentAlisonWord WHERE collection = :pack")
+                    .setParameter("pack", id);
+            long count = (long) query.uniqueResult();
+            session.close();
+            return count;
+        }
     }
 
     public void delete(String id) {
-        Bson query = Filters.eq("collection", id);
-        MongoCollection<Document> collection = mongoDb.getCollection("word_pairs");
-        collection.deleteMany(query);
+        try (Session session = sessionFactory.openSession()) {
+            session.getTransaction().begin();
+            session.createQuery("DELETE FROM PersistentAlisonWord WHERE collection = :userID")
+                    .setParameter("userID", id)
+                    .executeUpdate();
+            session.getTransaction().commit();
+        }
     }
 
+    @SuppressWarnings("unchecked")
     public List<String> getAllWords(String pack) {
-        MongoCollection<Document> collection = mongoDb.getCollection("word_pairs");
-        List<Bson> aggregates = new ArrayList<>();
-        aggregates.add(Aggregates.match(Filters.eq("collection", pack)));
-
-        MongoCursor<Document> cursor = collection.aggregate(aggregates).iterator();
-        List<String> result = new ArrayList<>();
-
-        try {
-            while (cursor.hasNext()) {
-                result.add(cursor.next().getString("word"));
-            }
-        } finally {
-            cursor.close();
+        try (Session session = sessionFactory.openSession()) {
+            final List<PersistentAlisonWord> list = (List<PersistentAlisonWord>) session
+                    .createQuery("FROM PersistentAlisonWord WHERE collection = :pack")
+                    .setParameter("pack", pack)
+                    .list();
+            return list.stream().map(PersistentAlisonWord::getWord).collect(Collectors.toList());
         }
-        return result;
     }
 
     public void learn(String ID, String contentRaw) {
@@ -162,12 +153,11 @@ public class TextGenerationService {
         }
     }
 
-    private void saveWord(String pack, String word, String next) {
-        MongoCollection<Document> collection = mongoDb.getCollection("word_pairs");
-        collection.insertOne(new Document()
-                .append("_id", new ObjectId())
-                .append("word", word)
-                .append("next", next)
-                .append("collection", pack));
+    private void saveWord(String id, String word, String next) {
+        try (Session session = sessionFactory.openSession()) {
+            session.getTransaction().begin();
+            session.saveOrUpdate(new PersistentAlisonWord(id, word, next));
+            session.getTransaction().commit();
+        }
     }
 }

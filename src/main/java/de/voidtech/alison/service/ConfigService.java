@@ -1,14 +1,14 @@
 package main.java.de.voidtech.alison.service;
 
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Service;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Service;
 
 @Service
 @Order(1)
@@ -69,14 +69,31 @@ public class ConfigService
         final String master = this.config.getProperty("master");
         return (master != null) ? master : "497341083949465600";
     }
-    
-    public String getMongoConnectionURL() {
-        final String dbURL = this.config.getProperty("mongodb_url");
-        return (dbURL != null) ? dbURL : "mongodb://localhost:27017/" + getMongoDatabaseName() + "?maxPoolSize=20&w=majority";
+
+    public String getHibernateDialect() {
+        final String dialect = this.config.getProperty("hibernate.Dialect");
+        return (dialect != null) ? dialect : "org.hibernate.dialect.PostgreSQLDialect";
     }
 
-    public String getMongoDatabaseName() {
-        final String db = this.config.getProperty("mongodb_database");
-        return (db != null) ? db : "Alison";
+    public String getDriver() {
+        final String driver = this.config.getProperty("hibernate.Driver");
+        return (driver != null) ? driver : "org.postgresql.Driver";
     }
+
+    public String getDBUser() {
+        final String user = this.config.getProperty("hibernate.User");
+        return (user != null) ? user : "postgres";
+    }
+
+    public String getDBPassword() {
+        final String pass = this.config.getProperty("hibernate.Password");
+        return (pass != null) ? pass : "postgres";
+    }
+
+    public String getConnectionURL() {
+        final String dbURL = this.config.getProperty("hibernate.ConnectionURL");
+        return (dbURL != null) ? dbURL : "jdbc:postgresql://localhost:5432/Alison";
+    }
+
+
 }

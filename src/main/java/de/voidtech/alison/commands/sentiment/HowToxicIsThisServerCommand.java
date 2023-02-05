@@ -90,9 +90,4 @@ public class HowToxicIsThisServerCommand extends AbstractCommand {
 		return CommandCategory.SENTIMENT_ANALYSIS;
 	}
 
-	@Override
-	public boolean isLongCommand() {
-		return true;
-	}
-
 }

@@ -93,11 +93,6 @@ public class ImitateCommand extends AbstractCommand {
     }
 
     @Override
-    public boolean isLongCommand() {
-        return false;
-    }
-
-    @Override
     public CommandCategory getCommandCategory() {
         return CommandCategory.TEXT_GENERATION;
     }

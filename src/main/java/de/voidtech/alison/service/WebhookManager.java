@@ -1,5 +1,12 @@
 package main.java.de.voidtech.alison.service;
 
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.Webhook;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.net.ssl.HttpsURLConnection;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.List;
@@ -7,15 +14,6 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.net.ssl.HttpsURLConnection;
-
-import org.json.JSONObject;
-
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.Webhook;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class WebhookManager {

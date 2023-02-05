@@ -22,10 +22,16 @@ public class IngestCommand extends AbstractCommand {
     @Override
     public void execute(CommandContext commandContext, List<String> args) {
         if (commandContext.getAuthor().getId().equals(config.getMaster())) {
-            ingestService.ingestFiles(commandContext);
-            commandContext.reply("Ingested models. Loading Claire data...");
-            ingestService.ingestClaireDB();
-            commandContext.reply("All done :D");
+            if (args.get(0).equals("all")) {
+                ingestService.ingestFiles(commandContext);
+                ingestService.ingestClaireDB(commandContext);
+            } else if (args.get(0).equals("models")) {
+                ingestService.ingestFiles(commandContext);
+            } else if (args.get(0).equals("claire")) {
+                ingestService.ingestClaireDB(commandContext);
+            } else {
+                commandContext.reply("Invalid ingest mode");
+            }
         }
     }
 
@@ -36,12 +42,14 @@ public class IngestCommand extends AbstractCommand {
 
     @Override
     public String getUsage() {
-        return "ingest";
+        return "ingest all\n" +
+                "ingest models\n" +
+                "ingest claire";
     }
 
     @Override
     public String getDescription() {
-        return "Allows the Bot Master to ingest words.alison files into the new MongoDB database";
+        return "Allows the Bot Master to ingest words.alison files and the Alison.db into the new PostgreSQL database";
     }
 
     @Override
@@ -56,16 +64,12 @@ public class IngestCommand extends AbstractCommand {
 
     @Override
     public boolean isDmCapable() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean requiresArguments() {
-        return false;
+        return true;
     }
 
-    @Override
-    public boolean isLongCommand() {
-        return false;
-    }
 }

@@ -69,9 +69,4 @@ public class PingCommand extends AbstractCommand{
 		return CommandCategory.INFORMATION;
 	}
 
-	@Override
-	public boolean isLongCommand() {
-		return false;
-	}
-
 }

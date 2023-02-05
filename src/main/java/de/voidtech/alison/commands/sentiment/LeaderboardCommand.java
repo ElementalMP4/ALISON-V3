@@ -134,9 +134,4 @@ public class LeaderboardCommand extends AbstractCommand {
 		return false;
 	}
 
-	@Override
-	public boolean isLongCommand() {
-		return true;
-	}
-
 }

@@ -112,9 +112,4 @@ public class HowToxicAmICommand extends AbstractCommand {
 	public CommandCategory getCommandCategory() {
 		return CommandCategory.SENTIMENT_ANALYSIS;
 	}
-
-	@Override
-	public boolean isLongCommand() {
-		return true;
-	}
 }
