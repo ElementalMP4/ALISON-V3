@@ -86,8 +86,8 @@ public class ClaireService {
         for (String word : words) {
             try (Session session = sessionFactory.openSession()) {
                 final List<PersistentClairePair> list = (List<PersistentClairePair>) session
-                        .createQuery("FROM PersistentClairePair WHERE UPPER(message) LIKE UPPER(%:word%)")
-                        .setParameter("word", word)
+                        .createQuery("FROM PersistentClairePair WHERE UPPER(message) LIKE UPPER(:word)")
+                        .setParameter("word", "%" + word + "%")
                         .list();
                 for (PersistentClairePair pair : list) {
                     sentencePool.add(pair.getReply());
