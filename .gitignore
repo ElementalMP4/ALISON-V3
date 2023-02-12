@@ -3,3 +3,4 @@ AlisonConfig.properties
 .classpath
 dependency-reduced-pom.xml
 Alison.db
+/.idea/
