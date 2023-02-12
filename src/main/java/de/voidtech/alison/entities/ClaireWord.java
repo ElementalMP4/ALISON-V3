@@ -10,7 +10,7 @@ public class ClaireWord {
         this.next = next;
     }
 
-    public boolean isStopWord() {
+    public boolean isNotStopWord() {
         return !this.next.equals("StopWord");
     }
 
