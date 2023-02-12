@@ -23,12 +23,12 @@ public class IngestCommand extends AbstractCommand {
     public void execute(CommandContext commandContext, List<String> args) {
         if (commandContext.getAuthor().getId().equals(config.getMaster())) {
             if (args.get(0).equals("all")) {
-                ingestService.ingestFiles(commandContext);
-                ingestService.ingestClaireDB(commandContext);
-            } else if (args.get(0).equals("models")) {
-                ingestService.ingestFiles(commandContext);
+                ingestService.ingestClaire();
+                ingestService.ingestAlison();
+            } else if (args.get(0).equals("alison")) {
+                ingestService.ingestAlison();
             } else if (args.get(0).equals("claire")) {
-                ingestService.ingestClaireDB(commandContext);
+                ingestService.ingestClaire();
             } else {
                 commandContext.reply("Invalid ingest mode");
             }
@@ -43,13 +43,13 @@ public class IngestCommand extends AbstractCommand {
     @Override
     public String getUsage() {
         return "ingest all\n" +
-                "ingest models\n" +
+                "ingest alison\n" +
                 "ingest claire";
     }
 
     @Override
     public String getDescription() {
-        return "Allows the Bot Master to ingest words.alison files and the Alison.db into the new PostgreSQL database";
+        return "Allows the Bot Master to ingest data from an SQLite db";
     }
 
     @Override

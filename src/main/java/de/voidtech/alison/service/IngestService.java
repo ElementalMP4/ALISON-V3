@@ -1,7 +1,5 @@
 package main.java.de.voidtech.alison.service;
 
-import main.java.de.voidtech.alison.commands.CommandContext;
-import main.java.de.voidtech.alison.entities.AlisonWord;
 import main.java.de.voidtech.alison.entities.PersistentAlisonWord;
 import main.java.de.voidtech.alison.entities.PersistentClairePair;
 import org.hibernate.Session;
@@ -9,14 +7,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,52 +19,11 @@ public class IngestService {
 
     public static final Logger LOGGER = Logger.getLogger(IngestService.class.getSimpleName());
 
-    public void ingestFiles(CommandContext context) {
-        context.reply("Loading model files...");
-        File[] modelFiles = new File("models/").listFiles();
-        Map<String, List<AlisonWord>> dataMap = new HashMap<>();
-        if (modelFiles == null) return;
-        for (File modelFile : modelFiles) {
-            dataMap.put(modelFile.getName(), load(modelFile.getName()));
-            LOGGER.log(Level.INFO, "Loaded model " + modelFile.getName());
-        }
-
-        context.reply("Model files loaded. Ingesting...");
-
-        for (String model : dataMap.keySet()) {
-            List<AlisonWord> words = dataMap.get(model);
-            for (AlisonWord word : words) {
-                for (int i = 0; i < word.getFrequency(); i++) {
-                    try (Session session = sessionFactory.openSession()) {
-                        session.getTransaction().begin();
-                        session.saveOrUpdate(new PersistentAlisonWord(model, word.getWord(), word.getNext()));
-                        session.getTransaction().commit();
-                    }
-                }
-            }
-            LOGGER.log(Level.INFO, "Ingested model " + model);
-        }
-        context.reply("Finished ingesting ALISON models :D");
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<AlisonWord> load(String pack) {
-        List<AlisonWord> words = null;
-        try {
-            FileInputStream fileInStream = new FileInputStream("models/" + pack + "/words.alison");
-            ObjectInputStream objectInStream = new ObjectInputStream(fileInStream);
-            words = (List<AlisonWord>) objectInStream.readObject();
-            objectInStream.close();
-        } catch (ClassNotFoundException | IOException e) {
-            e.printStackTrace();
-        }
-        return words;
-    }
-
-    public void ingestClaireDB(CommandContext commandContext) {
-        commandContext.reply("Loading CLAIRE data...");
+    public void ingestClaire() {
+        LOGGER.log(Level.INFO, "Started ingesting SQLite data...");
         DatabaseInterface db = new DatabaseInterface();
         ResultSet rs = db.getAllMessagePairs();
+        LOGGER.log(Level.INFO, "Ingesting CLAIRE data...");
         try {
             while(rs.next()) {
                 try (Session session = sessionFactory.openSession()) {
@@ -85,7 +35,33 @@ public class IngestService {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        commandContext.reply("Finished loading CLAIRE data :D");
+        LOGGER.log(Level.INFO, "Finished ingesting CLAIRE data");
+    }
+
+    public void ingestAlison() {
+        DatabaseInterface db = new DatabaseInterface();
+        ResultSet rs = db.getAllAlisonData();
+        LOGGER.log(Level.INFO, "Ingesting ALISON data...");
+        try {
+            while(rs.next()) {
+                try (Session session = sessionFactory.openSession()) {
+                    session.getTransaction().begin();
+                    session.saveOrUpdate(new PersistentAlisonWord(rs.getString("collection"), rs.getString("word"), rs.getString("next")));
+                    session.getTransaction().commit();
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        LOGGER.log(Level.INFO, "Finished ingesting ALISON data");
+    }
+
+    public void exportClaire() {
+
+    }
+
+    public void exportAlison() {
+
     }
 
     private class DatabaseInterface {
@@ -95,6 +71,9 @@ public class IngestService {
             return queryDatabase("SELECT * FROM MessagePairs");
         }
 
+        public ResultSet getAllAlisonData() {
+            return queryDatabase("SELECT * FROM AlisonData");
+        }
 
         public DatabaseInterface() {
             try {

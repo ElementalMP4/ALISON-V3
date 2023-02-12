@@ -5,7 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a7fa86ab-24e1-453d-9171-ee5e99b41b69" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/generation/IngestCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/commands/generation/IngestCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/entities/ClaireWord.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/entities/ClaireWord.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/ClaireService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/ClaireService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/IngestService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/voidtech/alison/service/IngestService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,12 +41,13 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "last_opened_file_path": "C:/Users/Sebastian Beattie/Documents/HOME/Programming Projects/Alison Projects/Alison V3/pom.xml"
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected="Application.V3 BAYBEE">
     <configuration name="V3 BAYBEE" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="main.java.de.voidtech.alison.Alison" />

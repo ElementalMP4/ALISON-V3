@@ -45,7 +45,7 @@ public class ClaireService {
         StringBuilder result = new StringBuilder();
         ClaireWord next = getRandomStartWord(words);
         if (next == null) return null;
-        while (next.isStopWord()) {
+        while (next.isNotStopWord()) {
             if (result.length() + (next.getWord() + " ").length() > length) break;
             result.append(next.getWord()).append(" ");
             List<ClaireWord> potentials = getWordList(words, next.getNext());
