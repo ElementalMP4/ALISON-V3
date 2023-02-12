@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.*;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,18 +18,25 @@ public class IngestService {
     @Autowired
     private SessionFactory sessionFactory;
 
+    @Autowired
+    private TextGenerationService textGenerationService;
+
+    @Autowired
+    private ClaireService claireService;
+
     public static final Logger LOGGER = Logger.getLogger(IngestService.class.getSimpleName());
 
     public void ingestClaire() {
-        LOGGER.log(Level.INFO, "Started ingesting SQLite data...");
-        DatabaseInterface db = new DatabaseInterface();
+        SQLiteInterface db = new SQLiteInterface();
         ResultSet rs = db.getAllMessagePairs();
         LOGGER.log(Level.INFO, "Ingesting CLAIRE data...");
         try {
             while(rs.next()) {
                 try (Session session = sessionFactory.openSession()) {
                     session.getTransaction().begin();
-                    session.saveOrUpdate(new PersistentClairePair(rs.getString("message"), rs.getString("reply")));
+                    session.saveOrUpdate(new PersistentClairePair(
+                            unescapeString(rs.getString("message")),
+                            unescapeString(rs.getString("reply"))));
                     session.getTransaction().commit();
                 }
             }
@@ -39,14 +47,16 @@ public class IngestService {
     }
 
     public void ingestAlison() {
-        DatabaseInterface db = new DatabaseInterface();
+        SQLiteInterface db = new SQLiteInterface();
         ResultSet rs = db.getAllAlisonData();
         LOGGER.log(Level.INFO, "Ingesting ALISON data...");
         try {
             while(rs.next()) {
                 try (Session session = sessionFactory.openSession()) {
                     session.getTransaction().begin();
-                    session.saveOrUpdate(new PersistentAlisonWord(rs.getString("collection"), rs.getString("word"), rs.getString("next")));
+                    session.saveOrUpdate(new PersistentAlisonWord(rs.getString("collection"),
+                            unescapeString(rs.getString("word")),
+                            unescapeString(rs.getString("next"))));
                     session.getTransaction().commit();
                 }
             }
@@ -56,15 +66,40 @@ public class IngestService {
         LOGGER.log(Level.INFO, "Finished ingesting ALISON data");
     }
 
-    public void exportClaire() {
+    private String escapeString(String in) {
+        return in.replaceAll("'", "/@/");
+    }
 
+    private String unescapeString(String in) {
+        return in.replaceAll("/@/", "'");
+    }
+
+    public void exportClaire() {
+        List<PersistentClairePair> clairePairs = claireService.getAllPairs();
+        SQLiteInterface db = new SQLiteInterface();
+        LOGGER.log(Level.INFO, "Exporting CLAIRE data...");
+        for (PersistentClairePair pair : clairePairs) {
+            db.executeUpdate(String.format("INSERT INTO MessagePairs VALUES ('%s', '%s')",
+                    escapeString(pair.getMessage()),
+                    escapeString(pair.getReply())));
+        }
+        LOGGER.log(Level.INFO, "Finished exporting CLAIRE data");
     }
 
     public void exportAlison() {
-
+        List<PersistentAlisonWord> alisonWords = textGenerationService.getAllWordsNoPack();
+        SQLiteInterface db = new SQLiteInterface();
+        LOGGER.log(Level.INFO, "Exporting ALISON data...");
+        for (PersistentAlisonWord pair : alisonWords) {
+            db.executeUpdate(String.format("INSERT INTO AlisonData VALUES ('%s', '%s', '%s')",
+                    escapeString(pair.getWord()),
+                    escapeString(pair.getNext()),
+                    pair.getCollection()));
+        }
+        LOGGER.log(Level.INFO, "Finished exporting ALISON data");
     }
 
-    private class DatabaseInterface {
+    private class SQLiteInterface {
         private Connection connection;
 
         public ResultSet getAllMessagePairs() {
@@ -75,10 +110,20 @@ public class IngestService {
             return queryDatabase("SELECT * FROM AlisonData");
         }
 
-        public DatabaseInterface() {
+        public SQLiteInterface() {
             try {
                 connection = DriverManager.getConnection("jdbc:sqlite:Alison.db");
             } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void executeUpdate(String query) {
+            try {
+                Statement statement = connection.createStatement();
+                statement.executeUpdate(query);
+            } catch (SQLException e) {
+                LOGGER.log(Level.SEVERE, "An SQL Exception has occurred: " + e.getMessage());
                 e.printStackTrace();
             }
         }

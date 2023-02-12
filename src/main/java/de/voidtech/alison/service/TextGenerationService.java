@@ -145,6 +145,15 @@ public class TextGenerationService {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public List<PersistentAlisonWord> getAllWordsNoPack() {
+        try (Session session = sessionFactory.openSession()) {
+            return (List<PersistentAlisonWord>) session
+                    .createQuery("FROM PersistentAlisonWord")
+                    .list();
+        }
+    }
+
     public void learn(String ID, String contentRaw) {
         final List<String> tokens = Arrays.asList(contentRaw.split(" "));
         for (int i = 0; i < tokens.size(); ++i) {

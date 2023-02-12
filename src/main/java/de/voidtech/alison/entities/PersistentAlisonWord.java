@@ -33,6 +33,10 @@ public class PersistentAlisonWord
         this.next = next;
     }
 
+    public String getCollection() {
+        return this.collection;
+    }
+
     public String getWord() {
         return this.word;
     }

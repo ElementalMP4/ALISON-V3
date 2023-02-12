@@ -96,6 +96,15 @@ public class ClaireService {
         return sentencePool;
     }
 
+    @SuppressWarnings("unchecked")
+    public List<PersistentClairePair> getAllPairs() {
+        try (Session session = sessionFactory.openSession()) {
+            return (List<PersistentClairePair>) session
+                    .createQuery("FROM PersistentClairePair")
+                    .list();
+        }
+    }
+
     public long getConversationCount() {
         try(Session session = sessionFactory.openSession())
         {
