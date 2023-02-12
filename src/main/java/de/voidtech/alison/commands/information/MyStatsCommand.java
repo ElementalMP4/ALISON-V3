@@ -57,7 +57,7 @@ public class MyStatsCommand extends AbstractCommand {
         		.setTitle("Stats for " + user.getAsTag())
         		.setThumbnail(user.getAvatarUrl())
         		.addField("Total Words", "```\n" + wordCount + "\n```", false)
-				.addField("Sentiment Score", "```\n" + sentiment.getAdjustedScore() + "\n```", false);
+				.addField("Sentiment Score", "```\n" + sentiment.getScore() + "\n```", false);
 		return statsEmbedBuilder.build();
 	}
 

@@ -59,21 +59,20 @@ public class HowToxicAmICommand extends AbstractCommand {
 				.addField("Negative words found",  "```\n" + howToxic.getNegativeCount() + "\n```", true)
 				.addField("Total Score (higher is better!)",  "```\n" + howToxic.getScore() + "\n```", true)
 				.addField("Average Score (higher is better!)",  "```\n" + howToxic.getAverageScore() + "\n```", true)
-				.addField("Adjusted Score (higher is better!)",  "```\n" + howToxic.getAdjustedScore() + "\n```", true)
 				.setFooter(getMessage(howToxic))
 				.build();
 		context.reply(toxicityEmbed);
 	}
 
 	private String getMessage(Sentiment howToxic) {
-		return howToxic.getAdjustedScore() < -2 ? "You are a right asshole, you should be nicer >:("
-				: howToxic.getAdjustedScore() < 2 ? "You're an alright person, but could be better." 
-				: "Everyone loves you! You say all the nicest things!";
+		return howToxic.getScore() < -2 ? "You are known by the state of california to cause crippling sadness"
+				: howToxic.getScore() < 2 ? "You are positively unobjectionable"
+				: "You are positively epic";
 	}
 
 	private Color getColour(Sentiment howToxic) {
-		return howToxic.getAdjustedScore() < -2 ? Color.RED 
-				: howToxic.getAdjustedScore() < 2 ? Color.ORANGE
+		return howToxic.getScore() < -2 ? Color.RED
+				: howToxic.getScore() < 2 ? Color.ORANGE
 				: Color.GREEN;
 	}
 
@@ -89,8 +88,7 @@ public class HowToxicAmICommand extends AbstractCommand {
 
 	@Override
 	public String getDescription() {
-		return "Using everything I know about you, I will determine how toxic you are!"
-				+ " Optionally, you can use another member's ID or mention to see their sentiment!";
+		return "Take these numbers with a grain of salt...";
 	}
 
 	@Override

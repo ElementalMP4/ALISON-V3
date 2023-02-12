@@ -44,13 +44,13 @@ public class LeaderboardCommand extends AbstractCommand {
 		for (Sentiment sentiment : topFive) {
 			leaderboard.append(intToEmojiString(allMembers.indexOf(sentiment) + 1));
 			leaderboard.append("<@").append(sentiment.getPack()).append("> - `");
-			leaderboard.append(sentiment.getAdjustedScore()).append("`\n");
+			leaderboard.append(sentiment.getScore()).append("`\n");
 		}
 		leaderboard.append("**Bottom 5 Members**\n");
 		for (Sentiment sentiment : bottomFive) {
 			leaderboard.append(intToEmojiString(allMembers.indexOf(sentiment) + 1));
 			leaderboard.append("<@").append(sentiment.getPack()).append("> - `");
-			leaderboard.append(sentiment.getAdjustedScore()).append("`\n");
+			leaderboard.append(sentiment.getScore()).append("`\n");
 		}
 		
 		return leaderboard.toString();

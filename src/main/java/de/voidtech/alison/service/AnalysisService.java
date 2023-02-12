@@ -41,7 +41,7 @@ public class AnalysisService {
                 .filter(memberID -> !privacyService.userHasOptedOut(memberID))
                 .filter(memberID -> textGenerationService.dataIsAvailableForID(memberID))
                 .map(this::analyseCollection)
-                .sorted(Comparator.comparing(sentiment -> sentiment != null ? sentiment.getAdjustedScore() : 0))
+                .sorted(Comparator.comparing(sentiment -> sentiment != null ? sentiment.getScore() : 0))
                 .collect(Collectors.toList());
         Collections.reverse(sentiments);
         return sentiments;
@@ -69,7 +69,7 @@ public class AnalysisService {
     public void respondToAlisonMention(Message message) {
         if (!message.getContentRaw().toLowerCase().contains("alison")) return;
         Sentiment sentiment = this.analyseSentence(message.getContentRaw().toLowerCase());
-        if (sentiment.getAdjustedScore() >= 3) message.addReaction(getRandomEmote(POSITIVE_EMOTES)).queue();
-        else if (sentiment.getAdjustedScore() <= -3) message.addReaction(getRandomEmote(NEGATIVE_EMOTES)).queue();
+        if (sentiment.getScore() >= 2) message.addReaction(getRandomEmote(POSITIVE_EMOTES)).queue();
+        else if (sentiment.getScore() <= -2) message.addReaction(getRandomEmote(NEGATIVE_EMOTES)).queue();
     }
 }

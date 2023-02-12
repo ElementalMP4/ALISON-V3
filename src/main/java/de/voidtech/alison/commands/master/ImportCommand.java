@@ -18,12 +18,12 @@ public class ImportCommand extends AbstractCommand {
     @Override
     public void execute(CommandContext commandContext, List<String> args) {
         if (args.get(0).equals("all")) {
-            ingestService.ingestClaire();
-            ingestService.ingestAlison();
+            ingestService.ingestClaire(commandContext);
+            ingestService.ingestAlison(commandContext);
         } else if (args.get(0).equals("alison")) {
-            ingestService.ingestAlison();
+            ingestService.ingestAlison(commandContext);
         } else if (args.get(0).equals("claire")) {
-            ingestService.ingestClaire();
+            ingestService.ingestClaire(commandContext);
         } else {
             commandContext.reply("Invalid ingest mode");
         }

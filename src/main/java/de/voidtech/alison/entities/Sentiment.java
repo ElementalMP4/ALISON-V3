@@ -52,25 +52,6 @@ public class Sentiment {
         });
         return results;
     }
-
-    private int calculateAdjusted(int count, int subtractor, int multiplier) {
-        return this.score + ((count - subtractor) * multiplier);
-    }
-
-    public int getAdjustedScore() {
-        if (this.positives.size() == 0 & this.negatives.size() == 0)
-            return 0;
-        if (this.positives.size() == 0)
-            return calculateAdjusted(this.negatives.size(), 0, -1);
-        if (this.negatives.size() == 0)
-            return calculateAdjusted(this.positives.size(), 0, 1);
-        if (this.positives.size() == this.negatives.size())
-            return this.score;
-        return this.positives.size() < this.negatives.size()
-                ? calculateAdjusted(this.negatives.size(), this.positives.size(), -1)
-                : calculateAdjusted(this.positives.size(), this.negatives.size(), 1);
-    }
-
     public double getAverageScore() {
         if (this.tokens.size() == 0)
             return 0;

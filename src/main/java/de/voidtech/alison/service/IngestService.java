@@ -1,5 +1,7 @@
 package main.java.de.voidtech.alison.service;
 
+import main.java.de.voidtech.alison.annotations.Command;
+import main.java.de.voidtech.alison.commands.CommandContext;
 import main.java.de.voidtech.alison.entities.PersistentAlisonWord;
 import main.java.de.voidtech.alison.entities.PersistentClairePair;
 import org.hibernate.Session;
@@ -26,10 +28,15 @@ public class IngestService {
 
     public static final Logger LOGGER = Logger.getLogger(IngestService.class.getSimpleName());
 
-    public void ingestClaire() {
+    private void log(String message, CommandContext context) {
+        LOGGER.log(Level.INFO, message);
+        context.reply(message);
+    }
+
+    public void ingestClaire(CommandContext context) {
         SQLiteInterface db = new SQLiteInterface();
         ResultSet rs = db.getAllMessagePairs();
-        LOGGER.log(Level.INFO, "Ingesting CLAIRE data...");
+        log("Ingesting CLAIRE data...", context);
         try {
             while(rs.next()) {
                 try (Session session = sessionFactory.openSession()) {
@@ -43,13 +50,13 @@ public class IngestService {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        LOGGER.log(Level.INFO, "Finished ingesting CLAIRE data");
+        log("Finished ingesting CLAIRE data", context);
     }
 
-    public void ingestAlison() {
+    public void ingestAlison(CommandContext context) {
         SQLiteInterface db = new SQLiteInterface();
         ResultSet rs = db.getAllAlisonData();
-        LOGGER.log(Level.INFO, "Ingesting ALISON data...");
+        log("Ingesting ALISON data...", context);
         try {
             while(rs.next()) {
                 try (Session session = sessionFactory.openSession()) {
@@ -63,7 +70,7 @@ public class IngestService {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        LOGGER.log(Level.INFO, "Finished ingesting ALISON data");
+        log("Finished ingesting ALISON data", context);
     }
 
     private String escapeString(String in) {
@@ -74,33 +81,45 @@ public class IngestService {
         return in.replaceAll("/@/", "'");
     }
 
-    public void exportClaire() {
+    public void exportClaire(CommandContext context) {
         List<PersistentClairePair> clairePairs = claireService.getAllPairs();
         SQLiteInterface db = new SQLiteInterface();
-        LOGGER.log(Level.INFO, "Exporting CLAIRE data...");
+        log("Exporting CLAIRE data...", context);
         for (PersistentClairePair pair : clairePairs) {
-            db.executeUpdate(String.format("INSERT INTO MessagePairs VALUES ('%s', '%s')",
+            try {
+                db.executeUpdate(String.format("INSERT INTO MessagePairs VALUES ('%s', '%s')",
                     escapeString(pair.getMessage()),
                     escapeString(pair.getReply())));
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
-        LOGGER.log(Level.INFO, "Finished exporting CLAIRE data");
+        log("Finished exporting CLAIRE data", context);
     }
 
-    public void exportAlison() {
+    public void exportAlison(CommandContext context) {
         List<PersistentAlisonWord> alisonWords = textGenerationService.getAllWordsNoPack();
         SQLiteInterface db = new SQLiteInterface();
-        LOGGER.log(Level.INFO, "Exporting ALISON data...");
+        log("Exporting ALISON data...", context);
         for (PersistentAlisonWord pair : alisonWords) {
-            db.executeUpdate(String.format("INSERT INTO AlisonData VALUES ('%s', '%s', '%s')",
+            try {
+                db.executeUpdate(String.format("INSERT INTO AlisonData VALUES ('%s', '%s', '%s')",
                     escapeString(pair.getWord()),
                     escapeString(pair.getNext()),
                     pair.getCollection()));
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
-        LOGGER.log(Level.INFO, "Finished exporting ALISON data");
+        log("Finished exporting ALISON data", context);
     }
 
     private class SQLiteInterface {
         private Connection connection;
+
+        private static final String CREATE_CLAIRE_TABLE = "CREATE TABLE IF NOT EXISTS MessagePairs (message TEXT, reply TEXT)";
+        private static final String CREATE_ALISON_TABLE = "CREATE TABLE IF NOT EXISTS AlisonData (word TEXT, next TEXT, collection TEXT)";
+
 
         public ResultSet getAllMessagePairs() {
             return queryDatabase("SELECT * FROM MessagePairs");
@@ -113,19 +132,16 @@ public class IngestService {
         public SQLiteInterface() {
             try {
                 connection = DriverManager.getConnection("jdbc:sqlite:Alison.db");
+                executeUpdate(CREATE_CLAIRE_TABLE);
+                executeUpdate(CREATE_ALISON_TABLE);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
 
-        public void executeUpdate(String query) {
-            try {
-                Statement statement = connection.createStatement();
-                statement.executeUpdate(query);
-            } catch (SQLException e) {
-                LOGGER.log(Level.SEVERE, "An SQL Exception has occurred: " + e.getMessage());
-                e.printStackTrace();
-            }
+        public void executeUpdate(String query) throws SQLException {
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(query);
         }
 
         private ResultSet queryDatabase(String query) {

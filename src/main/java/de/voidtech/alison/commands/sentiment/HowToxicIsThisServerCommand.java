@@ -35,23 +35,22 @@ public class HowToxicIsThisServerCommand extends AbstractCommand {
 			.addField("Negative words found",  "```\n" + howToxic.getNegativeCount() + "\n```", true)
 			.addField("Total Score (higher is better!)",  "```\n" + howToxic.getScore() + "\n```", true)
 			.addField("Average Score (higher is better!)",  "```\n" + howToxic.getAverageScore() + "\n```", true)
-			.addField("Adjusted Score (higher is better!)",  "```\n" + howToxic.getAdjustedScore() + "\n```", false)
-			.addField("Most positive member", "<@" +  topMember.getPack() + "> - `" + topMember.getAdjustedScore() + "`", true)
-			.addField("Most negative member", "<@" +  bottomMember.getPack() + "> - `" + bottomMember.getAdjustedScore() + "`", true)
+			.addField("Most positive member", "<@" +  topMember.getPack() + "> - `" + topMember.getScore() + "`", true)
+			.addField("Most negative member", "<@" +  bottomMember.getPack() + "> - `" + bottomMember.getScore() + "`", true)
 			.setFooter(getMessage(howToxic))
 			.build();
 		context.reply(toxicityEmbed);
 	}
 
 	private String getMessage(Sentiment howToxic) {
-		return howToxic.getAdjustedScore() < -2 ? "You are all terrible people go and sit in the corner and think about your actions"
-				: howToxic.getAdjustedScore() < 2 ? "There's nice people in here somewhere..." 
-				: "You are all delightful!";
+		return howToxic.getScore() < -2 ? "You are all terrible people go and sit in the corner and think about your actions"
+				: howToxic.getScore() < 2 ? "There's okay people in here somewhere..."
+				: "You are all amazingly perfect people with zero flaws";
 	}
 
 	private Color getColour(Sentiment howToxic) {
-		return howToxic.getAdjustedScore() < -2 ? Color.RED 
-				: howToxic.getAdjustedScore() < 2 ? Color.ORANGE
+		return howToxic.getScore() < -2 ? Color.RED
+				: howToxic.getScore() < 2 ? Color.ORANGE
 				: Color.GREEN;
 	}
 

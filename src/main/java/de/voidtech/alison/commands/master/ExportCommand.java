@@ -18,12 +18,12 @@ public class ExportCommand extends AbstractCommand {
     @Override
     public void execute(CommandContext commandContext, List<String> args) {
         if (args.get(0).equals("all")) {
-            ingestService.exportClaire();
-            ingestService.exportAlison();
+            ingestService.exportClaire(commandContext);
+            ingestService.exportAlison(commandContext);
         } else if (args.get(0).equals("alison")) {
-            ingestService.exportAlison();
+            ingestService.exportAlison(commandContext);
         } else if (args.get(0).equals("claire")) {
-            ingestService.exportClaire();
+            ingestService.exportClaire(commandContext);
         } else {
             commandContext.reply("Invalid export mode");
         }
