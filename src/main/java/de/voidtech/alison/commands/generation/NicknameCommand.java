@@ -63,20 +63,21 @@ public class NicknameCommand extends AbstractCommand {
 	private void handleNicknameUpdateChoice(Member member, String nickname, CommandContext context, ButtonConsumer result ) {
 		if (result.userSaidYes()) {
 			if (member.isOwner()) {
-	    		result.getMessage().editMessage("I can't change the owner's nickname!").queue();
+	    		result.getMessage().editMessage("I can't change the owner's nickname! The nickname I generated for you was **" + nickname + "**").queue();
 	    		return;
 	    	}
 			if (!context.getGuild().getSelfMember().hasPermission(Permission.NICKNAME_MANAGE)) {
-				result.getMessage().editMessage("I don't have permission to change nicknames! Please make sure I have the `Manage Nicknames` permission!").queue();
+				result.getMessage().editMessage("I don't have permission to change nicknames! Please make sure I have the `Manage Nicknames` permission! The nickname I generated for you was **" + nickname + "**").queue();
 				return;
 			}
 			if (!context.getGuild().getSelfMember().canInteract(member)) {
 				result.getMessage().editMessage("I don't have permission to change **" + member.getUser().getAsTag() +
-						"'s**  nickname! I need my role to be above **" + member.getUser().getAsTag() + "'s** highest role!").queue();
+						"'s**  nickname! I need my role to be above **" + member.getUser().getAsTag() + "'s** highest role! The nickname I generated for you was **" + nickname + "**").queue();
 				return;
 			}
+			String oldNickname = member.getEffectiveName();
 			member.modifyNickname(nickname).complete();
-			result.getMessage().editMessage("**" + member.getUser().getAsTag() + "'s** Nickname changed to **" + nickname + "**").queue();	
+			result.getMessage().editMessage("**" + member.getUser().getAsTag() + "'s** Nickname changed to **" + nickname + "** from **" + oldNickname).queue();
 		} else {
 			result.getMessage().editMessage("**" + member.getUser().getAsTag() + "'s** Nickname has not been changed to **" + nickname + "**").queue();
 		}
