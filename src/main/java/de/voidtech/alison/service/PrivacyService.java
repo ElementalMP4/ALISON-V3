@@ -2,6 +2,8 @@ package main.java.de.voidtech.alison.service;
 
 import main.java.de.voidtech.alison.entities.IgnoredChannel;
 import main.java.de.voidtech.alison.entities.IgnoredUser;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Message;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,12 +43,17 @@ public class PrivacyService {
         }
     }
 
-    public boolean channelIsIgnored(String channelId, String guildId) {
+    public boolean channelIsIgnored(Message message) {
+        if (message.getChannel().getType().equals(ChannelType.PRIVATE)) return false;
+        else return channelIsIgnored(message.getChannel().getId(), message.getGuild().getId());
+    }
+
+    public boolean channelIsIgnored(String channelID, String guildID) {
         try (Session session = sessionFactory.openSession()) {
             final IgnoredChannel channel = (IgnoredChannel) session
                     .createQuery("FROM IgnoredChannel WHERE channelID = :channelID AND guildID = :guildID")
-                    .setParameter("channelID", channelId)
-                    .setParameter("guildID", guildId)
+                    .setParameter("channelID", channelID)
+                    .setParameter("guildID", guildID)
                     .uniqueResult();
             return channel != null;
         }

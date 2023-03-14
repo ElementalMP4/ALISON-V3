@@ -1,9 +1,11 @@
 package main.java.de.voidtech.alison.service;
 
+import jdk.internal.javac.NoPreview;
 import main.java.de.voidtech.alison.commands.AbstractCommand;
 import main.java.de.voidtech.alison.commands.CommandCategory;
 import main.java.de.voidtech.alison.commands.CommandContext;
 import main.java.de.voidtech.alison.listeners.MessageListener;
+import main.java.de.voidtech.alison.routines.AbstractRoutine;
 import main.java.de.voidtech.alison.util.LevenshteinCalculator;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -11,6 +13,7 @@ import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
@@ -25,6 +28,9 @@ public class CommandService {
 
     @Autowired
     private List<AbstractCommand> commands;
+
+    @Autowired
+    private List<AbstractRoutine> routines;
 
     @Autowired
     private ConfigService config;
@@ -52,8 +58,8 @@ public class CommandService {
     public void handleMessage(Message message) {
         if (message.getAuthor().getId().equals(message.getJDA().getSelfUser().getId())) return;
         String prefix = config.getDefaultPrefix();
+        performNonCommandMessageActions(message);
         if (!shouldHandleAsChatCommand(prefix, message)) {
-            performNonCommandMessageActions(message);
             return;
         }
 
@@ -64,20 +70,21 @@ public class CommandService {
 
 
     private void performNonCommandMessageActions(Message message) {
-        if (message.getChannel().getType().equals(ChannelType.PRIVATE)) {
-            claireService.replyToMessage(message);
-            return;
-        }
-        if (privacyService.channelIsIgnored(message.getChannel().getId(), message.getGuild().getId()))
+        if (privacyService.channelIsIgnored(message))
             return;
         if (message.getContentRaw().equals(""))
             return;
         if (privacyService.userHasOptedOut(message.getAuthor().getId()))
             return;
-        claireService.addMessages(message);
-        analysisService.respondToAlisonMention(message);
-        textGenerationService.learn(message.getAuthor().getId(), message.getContentRaw());
-        claireService.replyToMessage(message);
+        runMessageRoutines(message);
+    }
+
+    private void runMessageRoutines(Message message) {
+        if (message.getChannel().getType().equals(ChannelType.PRIVATE)) return;
+        for (AbstractRoutine routine : routines) {
+            routine.run(message);
+            LOGGER.log(Level.FINE, "Routine executed: " + routine.getClass().getName());
+        }
     }
 
     private void doTheCommanding(Message message, String prefix) {

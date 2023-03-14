@@ -131,11 +131,4 @@ public class ClaireService {
                 && !message.getContentRaw().equals("")
                 && !message.getReferencedMessage().getContentRaw().equals("");
     }
-
-    public void replyToMessage(Message message) {
-        if (message.getMentionedUsers().contains(message.getJDA().getSelfUser())
-                | message.getChannel().getType().equals(ChannelType.PRIVATE)) {
-            message.reply(createReply(message.getContentDisplay())).mentionRepliedUser(false).queue();
-        }
-    }
 }
