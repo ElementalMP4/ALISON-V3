@@ -50,6 +50,7 @@ public class Spinner {
     public void finishSpinner(String knockedOverBy) {
         this.spinnerDuration = System.currentTimeMillis() - this.spinnerStartTime;
         this.isStillSpinning = false;
+        this.knockedOverBy = knockedOverBy;
     }
 
     public long getSpinnerDuration() {

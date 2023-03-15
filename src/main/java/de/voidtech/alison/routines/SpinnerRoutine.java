@@ -23,7 +23,7 @@ public class SpinnerRoutine extends AbstractRoutine {
             MessageEmbed embed = new EmbedBuilder()
                     .setColor(Color.ORANGE)
                     .setTitle(String.format("<@%s>'s spinner was knocked over by <@%s>!", spinner.getUserID(), spinner.getKnockedOverBy()))
-                    .setDescription(String.format("It lasted for <t:%d:T>", spinner.getSpinnerDuration()))
+                    .setDescription(String.format("It lasted for <t:%d:T>", spinner.getSpinnerDurationSeconds()))
                     .build();
             message.getChannel().sendMessageEmbeds(embed).queue();
         }
