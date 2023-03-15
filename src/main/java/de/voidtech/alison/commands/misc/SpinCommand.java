@@ -19,6 +19,8 @@ import java.util.concurrent.TimeUnit;
 @Command
 public class SpinCommand extends AbstractCommand {
 
+    private static final String CROSS_UNICODE = "U+274c";
+
     @Autowired
     private SpinnerService spinnerService;
 
@@ -27,8 +29,12 @@ public class SpinCommand extends AbstractCommand {
 
     @Override
     public void execute(CommandContext commandContext, List<String> args) {
-        spinnerService.createSpinner(commandContext.getMessage());
-        new SpinnerReactionListener(commandContext, waiter);
+        if (args.isEmpty()) {
+            spinnerService.createSpinner(commandContext.getMessage());
+            new SpinnerReactionListener(commandContext, waiter);
+        } else {
+            //TODO
+        }
     }
 
     @Override
@@ -79,7 +85,7 @@ public class SpinCommand extends AbstractCommand {
             Message msg = context.getMessage().getChannel().sendMessageEmbeds(embed).complete();
             waiter.waitForEvent(MessageReactionAddEvent.class,
                     e -> e.getUser().getId().equals(context.getAuthor().getId()) && e.getMessageId().equals(msg.getId()),
-                    e -> {if (e.getReactionEmote().getName().equals("x")) msg.delete().queue();}, 30, TimeUnit.SECONDS,
+                    e -> {if (e.getReactionEmote().toString().equals("RE:" + CROSS_UNICODE)) msg.delete().queue();}, 30, TimeUnit.SECONDS,
                     () -> msg.editMessageComponents().queue());
         }
     }
