@@ -48,7 +48,7 @@ public class SpinnerRoutine extends AbstractRoutine {
         if (hours > 0) output.add(hours + " hours");
         if (minutes > 0) output.add(minutes + " minutes");
         output.add(seconds + " seconds");
-        return String.join(", " + output);
+        return String.join(", ", output);
     }
 
     @Override
