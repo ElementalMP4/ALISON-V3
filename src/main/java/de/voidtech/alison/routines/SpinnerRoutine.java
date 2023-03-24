@@ -9,6 +9,8 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Routine
 public class SpinnerRoutine extends AbstractRoutine {
@@ -23,10 +25,30 @@ public class SpinnerRoutine extends AbstractRoutine {
             MessageEmbed embed = new EmbedBuilder()
                     .setColor(Color.ORANGE)
                     .setTitle(String.format("<@%s>'s spinner was knocked over by <@%s>!", spinner.getUserID(), spinner.getKnockedOverBy()))
-                    .setDescription(String.format("It lasted for <t:%d:T>", spinner.getSpinnerDurationSeconds()))
+                    .setDescription(String.format("It lasted for %s", secondsToTime(spinner.getSpinnerDurationSeconds())))
                     .build();
             message.getChannel().sendMessageEmbeds(embed).queue();
         }
+    }
+
+    private String secondsToTime(long duration) {
+        long days = duration / (24 * 3600);
+        duration = duration % (24 * 3600);
+
+        long hours = duration / 3600;
+        duration %= 3600;
+
+        long minutes = duration / 60;
+        duration %= 60;
+
+        long seconds = duration;
+        List<String> output = new ArrayList<>();
+
+        if (days > 0) output.add(days + " days");
+        if (hours > 0) output.add(hours + " hours");
+        if (minutes > 0) output.add(minutes + " minutes");
+        output.add(seconds + " seconds");
+        return String.join(", " + output);
     }
 
     @Override
