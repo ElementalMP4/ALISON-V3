@@ -61,7 +61,9 @@ public class AnalysisService {
     public Sentiment analyseCollection(String pack) {
         if (!textGenerationService.dataIsAvailableForID(pack)) return null;
         String words = String.join(" ", textGenerationService.getAllWords(pack));
-        return analyseSentence(words);
+        Sentiment sentiment = analyseSentence(words);
+        sentiment.setPack(pack);
+        return sentiment;
     }
 
     private List<String> tokenise(String input) {
