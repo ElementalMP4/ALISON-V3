@@ -1,6 +1,5 @@
 package main.java.de.voidtech.alison.service;
 
-import jdk.internal.javac.NoPreview;
 import main.java.de.voidtech.alison.commands.AbstractCommand;
 import main.java.de.voidtech.alison.commands.CommandCategory;
 import main.java.de.voidtech.alison.commands.CommandContext;
@@ -13,7 +12,6 @@ import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
@@ -37,15 +35,6 @@ public class CommandService {
 
     @Autowired
     private PrivacyService privacyService;
-
-    @Autowired
-    private TextGenerationService textGenerationService;
-
-    @Autowired
-    private ClaireService claireService;
-
-    @Autowired
-    private AnalysisService analysisService;
 
     public static final Logger LOGGER = Logger.getLogger(MessageListener.class.getSimpleName());
     private static final int LEVENSHTEIN_THRESHOLD = 3;

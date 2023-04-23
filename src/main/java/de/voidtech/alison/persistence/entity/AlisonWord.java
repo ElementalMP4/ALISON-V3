@@ -1,4 +1,4 @@
-package main.java.de.voidtech.alison.entities;
+package main.java.de.voidtech.alison.persistence.entity;
 
 import org.hibernate.annotations.Type;
 
@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "alison_words", indexes = @Index(columnList = "word", name = "idx_alison"))
-public class PersistentAlisonWord
+public class AlisonWord
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,10 +24,10 @@ public class PersistentAlisonWord
     private String next;
 
     @Deprecated
-    PersistentAlisonWord() {
+    AlisonWord() {
     }
 
-    public PersistentAlisonWord(String collection, String word, String next) {
+    public AlisonWord(String collection, String word, String next) {
         this.collection = collection;
         this.word = word;
         this.next = next;

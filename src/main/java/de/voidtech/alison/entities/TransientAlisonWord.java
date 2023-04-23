@@ -2,7 +2,7 @@ package main.java.de.voidtech.alison.entities;
 
 import java.io.Serializable;
 
-public class AlisonWord implements Serializable {
+public class TransientAlisonWord implements Serializable {
 
     private static final long serialVersionUID = -86154588887368562L;
 
@@ -12,7 +12,7 @@ public class AlisonWord implements Serializable {
 
     private int frequency;
 
-    public AlisonWord(String word, String next) {
+    public TransientAlisonWord(String word, String next) {
         this.word = word;
         this.next = next;
         this.frequency = 1;

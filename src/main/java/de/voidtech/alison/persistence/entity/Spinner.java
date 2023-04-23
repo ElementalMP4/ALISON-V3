@@ -1,4 +1,4 @@
-package main.java.de.voidtech.alison.entities;
+package main.java.de.voidtech.alison.persistence.entity;
 
 import javax.persistence.*;
 

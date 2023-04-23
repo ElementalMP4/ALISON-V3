@@ -1,11 +1,11 @@
 package main.java.de.voidtech.alison.service;
 
-import main.java.de.voidtech.alison.entities.IgnoredChannel;
-import main.java.de.voidtech.alison.entities.IgnoredUser;
+import main.java.de.voidtech.alison.persistence.entity.IgnoredChannel;
+import main.java.de.voidtech.alison.persistence.entity.IgnoredUser;
+import main.java.de.voidtech.alison.persistence.repository.IgnoredChannelRepository;
+import main.java.de.voidtech.alison.persistence.repository.IgnoredUserRepository;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,31 +16,22 @@ import java.util.stream.Collectors;
 public class PrivacyService {
 
     @Autowired
-    private SessionFactory sessionFactory;
+    private IgnoredChannelRepository ignoredChannelRepository;
+
+    @Autowired
+    private IgnoredUserRepository ignoredUserRepository;
 
     public void optOut(String id) {
-        try (Session session = sessionFactory.openSession()) {
-            session.getTransaction().begin();
-            session.saveOrUpdate(new IgnoredUser(id));
-            session.getTransaction().commit();
-        }
+        ignoredUserRepository.save(new IgnoredUser(id));
     }
 
     public void optIn(String id) {
-        try (Session session = sessionFactory.openSession()) {
-            session.getTransaction().begin();
-            session.createQuery("DELETE FROM IgnoredUser WHERE userID = :userID").setParameter("userID", id).executeUpdate();
-            session.getTransaction().commit();
-        }
+        ignoredUserRepository.deleteByUserId(id);
     }
 
     public boolean userHasOptedOut(String id) {
-        try (Session session = sessionFactory.openSession()) {
-            final IgnoredUser user = (IgnoredUser) session.createQuery("FROM IgnoredUser WHERE userID = :userID")
-                    .setParameter("userID", id)
-                    .uniqueResult();
-            return user != null;
-        }
+        IgnoredUser user = ignoredUserRepository.getUserById(id);
+        return user != null;
     }
 
     public boolean channelIsIgnored(Message message) {
@@ -49,43 +40,20 @@ public class PrivacyService {
     }
 
     public boolean channelIsIgnored(String channelID, String guildID) {
-        try (Session session = sessionFactory.openSession()) {
-            final IgnoredChannel channel = (IgnoredChannel) session
-                    .createQuery("FROM IgnoredChannel WHERE channelID = :channelID AND guildID = :guildID")
-                    .setParameter("channelID", channelID)
-                    .setParameter("guildID", guildID)
-                    .uniqueResult();
-            return channel != null;
-        }
+        IgnoredChannel channel = ignoredChannelRepository.getChannelByChannelIdAndGuildId(channelID, guildID);
+        return channel != null;
     }
 
-    @SuppressWarnings("unchecked")
     public List<String> getIgnoredChannelsForServer(String guildID) {
-        try (Session session = sessionFactory.openSession()) {
-            final List<IgnoredChannel> list = (List<IgnoredChannel>) session
-                    .createQuery("FROM IgnoredChannel WHERE guildID = :guildID")
-                    .setParameter("guildID", guildID)
-                    .list();
-            return list.stream().map(IgnoredChannel::getChannel).collect(Collectors.toList());
-        }
+        List<IgnoredChannel> list = ignoredChannelRepository.getAllIgnoredChannelsForServer(guildID);
+        return list.stream().map(IgnoredChannel::getChannel).collect(Collectors.toList());
     }
 
     public void ignoreChannel(String channelID, String guildID) {
-        try (Session session = sessionFactory.openSession()) {
-            session.getTransaction().begin();
-            session.saveOrUpdate(new IgnoredChannel(channelID, guildID));
-            session.getTransaction().commit();
-        }
+       ignoredChannelRepository.save(new IgnoredChannel(channelID, guildID));
     }
 
     public void unignoreChannel(String channelID, String guildID) {
-        try (Session session = sessionFactory.openSession()) {
-            session.getTransaction().begin();
-            session.createQuery("DELETE FROM IgnoredChannel WHERE channelID = :channelID AND guildID = :guildID")
-                    .setParameter("channelID", channelID)
-                    .setParameter("guildID", guildID)
-                    .executeUpdate();
-            session.getTransaction().commit();
-        }
+        ignoredChannelRepository.deleteByChannelIdAndGuildId(channelID, guildID);
     }
 }

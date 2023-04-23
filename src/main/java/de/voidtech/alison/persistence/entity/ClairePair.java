@@ -1,4 +1,4 @@
-package main.java.de.voidtech.alison.entities;
+package main.java.de.voidtech.alison.persistence.entity;
 
 import org.hibernate.annotations.Type;
 
@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "claire_pairs", indexes = @Index(columnList = "message", name = "idx_claire"))
-public class PersistentClairePair
+public class ClairePair
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,10 +21,10 @@ public class PersistentClairePair
     private String reply;
 
     @Deprecated
-    PersistentClairePair() {
+    ClairePair() {
     }
 
-    public PersistentClairePair(String message, String reply) {
+    public ClairePair(String message, String reply) {
         this.message = message;
         this.reply = reply;
     }

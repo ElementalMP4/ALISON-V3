@@ -1,9 +1,7 @@
 package main.java.de.voidtech.alison.service;
 
-import main.java.de.voidtech.alison.entities.PersistentAlisonWord;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
+import main.java.de.voidtech.alison.persistence.entity.AlisonWord;
+import main.java.de.voidtech.alison.persistence.repository.AlisonWordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +14,7 @@ import java.util.stream.Collectors;
 public class TextGenerationService {
 
     @Autowired
-    private SessionFactory sessionFactory;
+    private AlisonWordRepository alisonWordRepository;
 
     public static final int CLAIRE_LENGTH = 1000;
     public static final int NICKNAME_LENGTH = 32;
@@ -27,12 +25,12 @@ public class TextGenerationService {
 
     private String generateMessage(String wordCollectionName, int length) {
         StringBuilder result = new StringBuilder();
-        PersistentAlisonWord alisonWord = getRandomStartWord(wordCollectionName);
+        AlisonWord alisonWord = getRandomStartWord(wordCollectionName);
         if (alisonWord == null) return null;
         while (!alisonWord.isStopWord()) {
             if (result.length() + (alisonWord.getWord() + " ").length() > length) break;
             result.append(alisonWord.getWord()).append(" ");
-            List<PersistentAlisonWord> potentials = getWordList(wordCollectionName, alisonWord.getNext());
+            List<AlisonWord> potentials = getWordList(wordCollectionName, alisonWord.getNext());
             alisonWord = getRandomFromPotentials(potentials);
         }
         if (result.length() + alisonWord.getWord().length() <= length) result.append(alisonWord.getWord());
@@ -59,31 +57,16 @@ public class TextGenerationService {
         return generateMessage(wordCollection, PROMPT_LENGTH);
     }
 
-    private PersistentAlisonWord getRandomFromPotentials(List<PersistentAlisonWord> potentials) {
+    private AlisonWord getRandomFromPotentials(List<AlisonWord> potentials) {
         return potentials.get(new Random().nextInt(potentials.size()));
     }
 
-    @SuppressWarnings("unchecked")
-    public List<PersistentAlisonWord> getWordList(final String pack, final String word) {
-        try (Session session = sessionFactory.openSession()) {
-            final List<PersistentAlisonWord> list = (List<PersistentAlisonWord>) session
-                    .createQuery("FROM PersistentAlisonWord WHERE collection = :pack AND word = :word")
-                    .setParameter("pack", pack)
-                    .setParameter("word", word)
-                    .list();
-            return list;
-        }
+    public List<AlisonWord> getWordList(final String pack, final String word) {
+        return alisonWordRepository.getAllWordsStartingWith(pack, word);
     }
 
-    public PersistentAlisonWord getRandomStartWord(final String pack) {
-        try (Session session = sessionFactory.openSession()) {
-            final PersistentAlisonWord alisonWord = (PersistentAlisonWord) session
-                    .createQuery("FROM PersistentAlisonWord WHERE collection = :pack ORDER BY RANDOM()")
-                    .setParameter("pack", pack)
-                    .setMaxResults(1)
-                    .uniqueResult();
-            return alisonWord;
-        }
+    public AlisonWord getRandomStartWord(final String pack) {
+        return alisonWordRepository.getRandomStartWord(pack);
     }
 
     public boolean dataIsAvailableForID(String id) {
@@ -91,67 +74,28 @@ public class TextGenerationService {
     }
 
     public long getWordCount() {
-        try(Session session = sessionFactory.openSession())
-        {
-            @SuppressWarnings("rawtypes")
-            Query query = session.createQuery("SELECT COUNT(*) FROM PersistentAlisonWord");
-            long count = (long) query.uniqueResult();
-            session.close();
-            return count;
-        }
+        return alisonWordRepository.getWordCount();
     }
 
     public long getModelCount() {
-        try(Session session = sessionFactory.openSession())
-        {
-            @SuppressWarnings("rawtypes")
-            Query query = session.createQuery("SELECT COUNT(DISTINCT collection) FROM PersistentAlisonWord");
-            long count = (long) query.uniqueResult();
-            session.close();
-            return count;
-        }
+        return alisonWordRepository.getModelCount();
     }
 
     public long getWordCountForCollection(String id) {
-        try (Session session = sessionFactory.openSession()) {
-            @SuppressWarnings("rawtypes")
-            Query query = session
-                    .createQuery("SELECT COUNT(*) FROM PersistentAlisonWord WHERE collection = :pack")
-                    .setParameter("pack", id);
-            long count = (long) query.uniqueResult();
-            session.close();
-            return count;
-        }
+        return alisonWordRepository.getWordCountInModel(id);
     }
 
     public void delete(String id) {
-        try (Session session = sessionFactory.openSession()) {
-            session.getTransaction().begin();
-            session.createQuery("DELETE FROM PersistentAlisonWord WHERE collection = :userID")
-                    .setParameter("userID", id)
-                    .executeUpdate();
-            session.getTransaction().commit();
-        }
+        alisonWordRepository.deleteModel(id);
     }
 
-    @SuppressWarnings("unchecked")
     public List<String> getAllWords(String pack) {
-        try (Session session = sessionFactory.openSession()) {
-            final List<PersistentAlisonWord> list = (List<PersistentAlisonWord>) session
-                    .createQuery("FROM PersistentAlisonWord WHERE collection = :pack")
-                    .setParameter("pack", pack)
-                    .list();
-            return list.stream().map(PersistentAlisonWord::getWord).collect(Collectors.toList());
-        }
+        List<AlisonWord> list = alisonWordRepository.getAllWordsInModel(pack);
+        return list.stream().map(AlisonWord::getWord).collect(Collectors.toList());
     }
 
-    @SuppressWarnings("unchecked")
-    public List<PersistentAlisonWord> getAllWordsNoPack() {
-        try (Session session = sessionFactory.openSession()) {
-            return (List<PersistentAlisonWord>) session
-                    .createQuery("FROM PersistentAlisonWord")
-                    .list();
-        }
+    public List<AlisonWord> getAllWordsNoPack() {
+        return alisonWordRepository.getEverything();
     }
 
     public void learn(String ID, String contentRaw) {
@@ -163,10 +107,6 @@ public class TextGenerationService {
     }
 
     private void saveWord(String id, String word, String next) {
-        try (Session session = sessionFactory.openSession()) {
-            session.getTransaction().begin();
-            session.saveOrUpdate(new PersistentAlisonWord(id, word, next));
-            session.getTransaction().commit();
-        }
+        alisonWordRepository.save(new AlisonWord(id, word, next));
     }
 }

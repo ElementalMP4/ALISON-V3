@@ -1,11 +1,11 @@
 package main.java.de.voidtech.alison.entities;
 
-public class ClaireWord {
+public class TransientClaireWord {
     private final String word;
 
     private final String next;
 
-    public ClaireWord(String word, String next) {
+    public TransientClaireWord(String word, String next) {
         this.word = word;
         this.next = next;
     }

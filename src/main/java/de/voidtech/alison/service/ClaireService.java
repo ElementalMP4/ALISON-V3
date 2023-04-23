@@ -1,12 +1,9 @@
 package main.java.de.voidtech.alison.service;
 
-import main.java.de.voidtech.alison.entities.ClaireWord;
-import main.java.de.voidtech.alison.entities.PersistentClairePair;
-import net.dv8tion.jda.api.entities.ChannelType;
+import main.java.de.voidtech.alison.entities.TransientClaireWord;
+import main.java.de.voidtech.alison.persistence.entity.ClairePair;
+import main.java.de.voidtech.alison.persistence.repository.ClairePairRepository;
 import net.dv8tion.jda.api.entities.Message;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +18,7 @@ import java.util.stream.Stream;
 public class ClaireService {
 
     @Autowired
-    private SessionFactory sessionFactory;
+    private ClairePairRepository repository;
 
     public String createReply(String prompt) {
         return createReply(prompt, TextGenerationService.CLAIRE_LENGTH);
@@ -30,7 +27,7 @@ public class ClaireService {
     public String createReply(String message, int length) {
         List<String> existingResponseSentences = getExistingResponseSentences(message);
         if (existingResponseSentences.isEmpty()) return "Huh";
-        List<ClaireWord> tokenizedWords = new ArrayList<>();
+        List<TransientClaireWord> tokenizedWords = new ArrayList<>();
         for (String response : existingResponseSentences) {
             tokenizedWords = Stream.concat(tokenizedWords.stream(),
                     stringToClaireWords(response).stream())
@@ -40,89 +37,63 @@ public class ClaireService {
         return reply == null ? "Huh" : reply;
     }
 
-    public String createSentenceUnderLength(List<ClaireWord> words, int length) {
+    public String createSentenceUnderLength(List<TransientClaireWord> words, int length) {
         if (words.isEmpty()) return null;
         StringBuilder result = new StringBuilder();
-        ClaireWord next = getRandomStartWord(words);
+        TransientClaireWord next = getRandomStartWord(words);
         if (next == null) return null;
         while (next.isNotStopWord()) {
             if (result.length() + (next.getWord() + " ").length() > length) break;
             result.append(next.getWord()).append(" ");
-            List<ClaireWord> potentials = getWordList(words, next.getNext());
+            List<TransientClaireWord> potentials = getWordList(words, next.getNext());
             next = getRandomFromPotentials(potentials);
         }
         if (result.length() + next.getWord().length() <= length) result.append(next.getWord());
         return result.toString();
     }
 
-    private ClaireWord getRandomFromPotentials(List<ClaireWord> potentials) {
+    private TransientClaireWord getRandomFromPotentials(List<TransientClaireWord> potentials) {
         return potentials.get(new Random().nextInt(potentials.size()));
     }
 
-    private ClaireWord getRandomStartWord(List<ClaireWord> words) {
+    private TransientClaireWord getRandomStartWord(List<TransientClaireWord> words) {
         if (words.size() < 2) return null;
         else return words.get(new Random().nextInt(words.size() - 1));
     }
 
-    private List<ClaireWord> getWordList(List<ClaireWord> words, String wordToFind) {
+    private List<TransientClaireWord> getWordList(List<TransientClaireWord> words, String wordToFind) {
         return words.stream().filter(word -> word.getWord().equals(wordToFind)).collect(Collectors.toList());
     }
 
-    private List<ClaireWord> stringToClaireWords(String content) {
+    private List<TransientClaireWord> stringToClaireWords(String content) {
         List<String> tokens = Arrays.asList(content.split(" "));
-        List<ClaireWord> words = new ArrayList<>();
+        List<TransientClaireWord> words = new ArrayList<>();
         for (int i = 0; i < tokens.size(); ++i) {
-            if (i == tokens.size() - 1) words.add(new ClaireWord(tokens.get(i), "StopWord"));
-            else words.add(new ClaireWord(tokens.get(i), tokens.get(i + 1)));
+            if (i == tokens.size() - 1) words.add(new TransientClaireWord(tokens.get(i), "StopWord"));
+            else words.add(new TransientClaireWord(tokens.get(i), tokens.get(i + 1)));
         }
         return words;
     }
 
-    @SuppressWarnings("unchecked")
     private List<String> getExistingResponseSentences(String message) {
         String[] words = message.split(" ");
         List<String> sentencePool = new ArrayList<>();
         for (String word : words) {
-            try (Session session = sessionFactory.openSession()) {
-                final List<PersistentClairePair> list = (List<PersistentClairePair>) session
-                        .createQuery("FROM PersistentClairePair WHERE message LIKE :word")
-                        .setParameter("word", "%" + word + "%")
-                        .list();
-                for (PersistentClairePair pair : list) {
-                    sentencePool.add(pair.getReply());
-                }
+            List<ClairePair> list = repository.getClairePairsContainingWord("%" + word + "%");
+            for (ClairePair pair : list) {
+                sentencePool.add(pair.getReply());
             }
         }
         return sentencePool;
     }
 
-    @SuppressWarnings("unchecked")
-    public List<PersistentClairePair> getAllPairs() {
-        try (Session session = sessionFactory.openSession()) {
-            return (List<PersistentClairePair>) session
-                    .createQuery("FROM PersistentClairePair")
-                    .list();
-        }
-    }
-
     public long getConversationCount() {
-        try(Session session = sessionFactory.openSession())
-        {
-            @SuppressWarnings("rawtypes")
-            Query query = session.createQuery("SELECT COUNT(*) FROM PersistentClairePair");
-            long count = (long) query.uniqueResult();
-            session.close();
-            return count;
-        }
+        return repository.getConversationCount();
     }
 
     public void addMessages(Message message) {
         if (messageCanBeAdded(message)) {
-            try (Session session = sessionFactory.openSession()) {
-                session.getTransaction().begin();
-                session.saveOrUpdate(new PersistentClairePair(message.getReferencedMessage().getContentDisplay(), message.getContentDisplay()));
-                session.getTransaction().commit();
-            }
+            repository.save(new ClairePair(message.getReferencedMessage().getContentDisplay(), message.getContentDisplay()));
         }
     }
 

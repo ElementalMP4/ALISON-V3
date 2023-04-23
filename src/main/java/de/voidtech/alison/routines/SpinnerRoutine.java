@@ -1,7 +1,7 @@
 package main.java.de.voidtech.alison.routines;
 
 import main.java.de.voidtech.alison.annotations.Routine;
-import main.java.de.voidtech.alison.entities.Spinner;
+import main.java.de.voidtech.alison.persistence.entity.Spinner;
 import main.java.de.voidtech.alison.service.SpinnerService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
