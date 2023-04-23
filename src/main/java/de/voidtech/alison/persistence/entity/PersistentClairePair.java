@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "claire_pairs", indexes = @Index(columnList = "message", name = "idx_claire"))
-public class ClairePair
+public class PersistentClairePair
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,10 +21,10 @@ public class ClairePair
     private String reply;
 
     @Deprecated
-    ClairePair() {
+    PersistentClairePair() {
     }
 
-    public ClairePair(String message, String reply) {
+    public PersistentClairePair(String message, String reply) {
         this.message = message;
         this.reply = reply;
     }

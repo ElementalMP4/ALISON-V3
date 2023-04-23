@@ -1,7 +1,7 @@
 package main.java.de.voidtech.alison.service;
 
 import main.java.de.voidtech.alison.entities.TransientClaireWord;
-import main.java.de.voidtech.alison.persistence.entity.ClairePair;
+import main.java.de.voidtech.alison.persistence.entity.PersistentClairePair;
 import main.java.de.voidtech.alison.persistence.repository.ClairePairRepository;
 import net.dv8tion.jda.api.entities.Message;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,8 +79,8 @@ public class ClaireService {
         String[] words = message.split(" ");
         List<String> sentencePool = new ArrayList<>();
         for (String word : words) {
-            List<ClairePair> list = repository.getClairePairsContainingWord("%" + word + "%");
-            for (ClairePair pair : list) {
+            List<PersistentClairePair> list = repository.getClairePairsContainingWord("%" + word + "%");
+            for (PersistentClairePair pair : list) {
                 sentencePool.add(pair.getReply());
             }
         }
@@ -93,7 +93,7 @@ public class ClaireService {
 
     public void addMessages(Message message) {
         if (messageCanBeAdded(message)) {
-            repository.save(new ClairePair(message.getReferencedMessage().getContentDisplay(), message.getContentDisplay()));
+            repository.save(new PersistentClairePair(message.getReferencedMessage().getContentDisplay(), message.getContentDisplay()));
         }
     }
 

@@ -12,6 +12,8 @@ import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
@@ -69,10 +71,10 @@ public class CommandService {
     }
 
     private void runMessageRoutines(Message message) {
-        if (message.getChannel().getType().equals(ChannelType.PRIVATE)) return;
         for (AbstractRoutine routine : routines) {
-            routine.run(message);
-            LOGGER.log(Level.FINE, "Routine executed: " + routine.getClass().getName());
+            if (message.getChannel().getType().equals(ChannelType.PRIVATE)) {
+                if (routine.isDmCapable()) routine.run(message);
+            } else routine.run(message);
         }
     }
 

@@ -15,7 +15,7 @@ public class ClaireRespondToMessageRoutine extends AbstractRoutine {
     @Override
     public void executeInternal(Message message) {
         if (message.getMentionedUsers().contains(message.getJDA().getSelfUser())
-                | message.getChannel().getType().equals(ChannelType.PRIVATE)) {
+                || message.getChannel().getType().equals(ChannelType.PRIVATE)) {
             message.reply(claireService.createReply(message.getContentDisplay())).mentionRepliedUser(false).queue();
         }
     }
@@ -28,5 +28,10 @@ public class ClaireRespondToMessageRoutine extends AbstractRoutine {
     @Override
     public String getDescription() {
         return "Allows direct messages or messages that mention ALISON to be responded to by CLAIRE";
+    }
+
+    @Override
+    public boolean isDmCapable() {
+        return true;
     }
 }

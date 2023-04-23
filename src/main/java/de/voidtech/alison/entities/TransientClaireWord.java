@@ -15,7 +15,7 @@ public class TransientClaireWord {
     }
 
     public String getWord() {
-        return this.word;
+        return this.word.replaceAll("/@/", "'");
     }
 
     public String getNext() {

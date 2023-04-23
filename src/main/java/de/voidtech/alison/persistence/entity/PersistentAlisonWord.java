@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "alison_words", indexes = @Index(columnList = "word", name = "idx_alison"))
-public class AlisonWord
+public class PersistentAlisonWord
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,10 +24,10 @@ public class AlisonWord
     private String next;
 
     @Deprecated
-    AlisonWord() {
+    PersistentAlisonWord() {
     }
 
-    public AlisonWord(String collection, String word, String next) {
+    public PersistentAlisonWord(String collection, String word, String next) {
         this.collection = collection;
         this.word = word;
         this.next = next;

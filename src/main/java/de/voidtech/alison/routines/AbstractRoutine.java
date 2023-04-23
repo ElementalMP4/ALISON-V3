@@ -18,4 +18,5 @@ public abstract class AbstractRoutine {
 
     public abstract String getName();
     public abstract String getDescription();
+    public abstract boolean isDmCapable();
 }

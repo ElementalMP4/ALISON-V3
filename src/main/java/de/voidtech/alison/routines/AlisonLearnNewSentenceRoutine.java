@@ -25,4 +25,9 @@ public class AlisonLearnNewSentenceRoutine extends AbstractRoutine {
     public String getDescription() {
         return "Allows ALISON to learn new sentences and add them to the ALISON repository";
     }
+
+    @Override
+    public boolean isDmCapable() {
+        return true;
+    }
 }

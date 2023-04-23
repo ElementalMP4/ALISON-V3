@@ -25,4 +25,9 @@ public class AlisonMentionResponseRoutine extends AbstractRoutine {
     public String getDescription() {
         return "Allows ALISON to react to the sentiment of a message that contains 'alison' ";
     }
+
+    @Override
+    public boolean isDmCapable() {
+        return true;
+    }
 }

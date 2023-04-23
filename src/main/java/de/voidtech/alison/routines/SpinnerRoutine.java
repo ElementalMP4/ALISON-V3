@@ -60,4 +60,9 @@ public class SpinnerRoutine extends AbstractRoutine {
     public String getDescription() {
         return "Detects when spinners are knocked over in a channel (started by the spin command)";
     }
+
+    @Override
+    public boolean isDmCapable() {
+        return false;
+    }
 }

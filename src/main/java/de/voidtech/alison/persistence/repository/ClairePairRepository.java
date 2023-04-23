@@ -1,6 +1,6 @@
 package main.java.de.voidtech.alison.persistence.repository;
 
-import main.java.de.voidtech.alison.persistence.entity.ClairePair;
+import main.java.de.voidtech.alison.persistence.entity.PersistentClairePair;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -8,12 +8,12 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ClairePairRepository extends JpaRepository<ClairePair, Long> {
+public interface ClairePairRepository extends JpaRepository<PersistentClairePair, Long> {
 
     @Query("FROM PersistentClairePair WHERE message LIKE :word")
-    List<ClairePair> getClairePairsContainingWord(String word);
+    List<PersistentClairePair> getClairePairsContainingWord(String word);
 
-    @Query(value = "SELECT COUNT(*) FROM PersistentClairePair", nativeQuery = true)
+    @Query(value = "SELECT COUNT(*) FROM claire_pairs", nativeQuery = true)
     long getConversationCount();
 
 }

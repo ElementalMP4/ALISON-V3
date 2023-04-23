@@ -25,4 +25,9 @@ public class ClaireAddMessageRoutine extends AbstractRoutine {
     public String getDescription() {
         return "Allows ALISON to add message pairs to the CLAIRE repository";
     }
+
+    @Override
+    public boolean isDmCapable() {
+        return false;
+    }
 }

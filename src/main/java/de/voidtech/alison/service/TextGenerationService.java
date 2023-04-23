@@ -1,6 +1,6 @@
 package main.java.de.voidtech.alison.service;
 
-import main.java.de.voidtech.alison.persistence.entity.AlisonWord;
+import main.java.de.voidtech.alison.persistence.entity.PersistentAlisonWord;
 import main.java.de.voidtech.alison.persistence.repository.AlisonWordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,12 +25,12 @@ public class TextGenerationService {
 
     private String generateMessage(String wordCollectionName, int length) {
         StringBuilder result = new StringBuilder();
-        AlisonWord alisonWord = getRandomStartWord(wordCollectionName);
+        PersistentAlisonWord alisonWord = getRandomStartWord(wordCollectionName);
         if (alisonWord == null) return null;
         while (!alisonWord.isStopWord()) {
             if (result.length() + (alisonWord.getWord() + " ").length() > length) break;
             result.append(alisonWord.getWord()).append(" ");
-            List<AlisonWord> potentials = getWordList(wordCollectionName, alisonWord.getNext());
+            List<PersistentAlisonWord> potentials = getWordList(wordCollectionName, alisonWord.getNext());
             alisonWord = getRandomFromPotentials(potentials);
         }
         if (result.length() + alisonWord.getWord().length() <= length) result.append(alisonWord.getWord());
@@ -57,15 +57,15 @@ public class TextGenerationService {
         return generateMessage(wordCollection, PROMPT_LENGTH);
     }
 
-    private AlisonWord getRandomFromPotentials(List<AlisonWord> potentials) {
+    private PersistentAlisonWord getRandomFromPotentials(List<PersistentAlisonWord> potentials) {
         return potentials.get(new Random().nextInt(potentials.size()));
     }
 
-    public List<AlisonWord> getWordList(final String pack, final String word) {
+    public List<PersistentAlisonWord> getWordList(final String pack, final String word) {
         return alisonWordRepository.getAllWordsStartingWith(pack, word);
     }
 
-    public AlisonWord getRandomStartWord(final String pack) {
+    public PersistentAlisonWord getRandomStartWord(final String pack) {
         return alisonWordRepository.getRandomStartWord(pack);
     }
 
@@ -90,11 +90,11 @@ public class TextGenerationService {
     }
 
     public List<String> getAllWords(String pack) {
-        List<AlisonWord> list = alisonWordRepository.getAllWordsInModel(pack);
-        return list.stream().map(AlisonWord::getWord).collect(Collectors.toList());
+        List<PersistentAlisonWord> list = alisonWordRepository.getAllWordsInModel(pack);
+        return list.stream().map(PersistentAlisonWord::getWord).collect(Collectors.toList());
     }
 
-    public List<AlisonWord> getAllWordsNoPack() {
+    public List<PersistentAlisonWord> getAllWordsNoPack() {
         return alisonWordRepository.getEverything();
     }
 
@@ -107,6 +107,6 @@ public class TextGenerationService {
     }
 
     private void saveWord(String id, String word, String next) {
-        alisonWordRepository.save(new AlisonWord(id, word, next));
+        alisonWordRepository.save(new PersistentAlisonWord(id, word, next));
     }
 }
