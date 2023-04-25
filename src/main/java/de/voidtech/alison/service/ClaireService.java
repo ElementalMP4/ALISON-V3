@@ -95,7 +95,6 @@ public class ClaireService {
 
     private List<String> getExistingResponseSentences(String message) {
         List<String> words = filterOutPointlessContext(message);
-        System.out.println(String.join(" ", words));
         List<String> sentencePool = new ArrayList<>();
         for (String word : words) {
             List<PersistentClairePair> list = repository.getClairePairsContainingWord("%" + word.toLowerCase() + "%");
