@@ -6,7 +6,7 @@ import main.java.de.voidtech.alison.commands.AbstractCommand;
 import main.java.de.voidtech.alison.commands.CommandCategory;
 import main.java.de.voidtech.alison.commands.CommandContext;
 import main.java.de.voidtech.alison.service.PrivacyService;
-import main.java.de.voidtech.alison.service.TextGenerationService;
+import main.java.de.voidtech.alison.service.AlisonService;
 import main.java.de.voidtech.alison.util.ButtonConsumer;
 import main.java.de.voidtech.alison.util.ButtonListener;
 import net.dv8tion.jda.api.Permission;
@@ -23,7 +23,7 @@ public class NicknameCommand extends AbstractCommand {
 	private PrivacyService privacyService;
 
 	@Autowired
-	private TextGenerationService textGenerationService;
+	private AlisonService textGenerationService;
 
 	@Autowired
 	private EventWaiter waiter;

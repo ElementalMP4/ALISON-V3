@@ -5,7 +5,7 @@ import main.java.de.voidtech.alison.annotations.Command;
 import main.java.de.voidtech.alison.commands.AbstractCommand;
 import main.java.de.voidtech.alison.commands.CommandCategory;
 import main.java.de.voidtech.alison.commands.CommandContext;
-import main.java.de.voidtech.alison.service.TextGenerationService;
+import main.java.de.voidtech.alison.service.AlisonService;
 import main.java.de.voidtech.alison.util.ButtonListener;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,7 +18,7 @@ public class ClearCommand extends AbstractCommand {
 	private EventWaiter waiter;
 
 	@Autowired
-	private TextGenerationService textGenerationService;
+	private AlisonService textGenerationService;
 
     @Override
     public void execute(CommandContext context, List<String> args) {

@@ -10,10 +10,9 @@ import java.util.List;
 @Repository
 public interface ClairePairRepository extends JpaRepository<PersistentClairePair, Long> {
 
-    @Query("FROM PersistentClairePair WHERE message LIKE :word")
+    @Query("FROM PersistentClairePair WHERE LOWER(message) LIKE LOWER(:word)")
     List<PersistentClairePair> getClairePairsContainingWord(String word);
 
     @Query(value = "SELECT COUNT(*) FROM claire_pairs", nativeQuery = true)
     long getConversationCount();
-
 }

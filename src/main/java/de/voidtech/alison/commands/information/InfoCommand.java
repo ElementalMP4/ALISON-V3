@@ -6,7 +6,7 @@ import main.java.de.voidtech.alison.commands.AbstractCommand;
 import main.java.de.voidtech.alison.commands.CommandCategory;
 import main.java.de.voidtech.alison.commands.CommandContext;
 import main.java.de.voidtech.alison.service.ClaireService;
-import main.java.de.voidtech.alison.service.TextGenerationService;
+import main.java.de.voidtech.alison.service.AlisonService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -19,7 +19,7 @@ import java.util.List;
 public class InfoCommand extends AbstractCommand {
 
 	@Autowired
-	private TextGenerationService textGenerationService;
+	private AlisonService textGenerationService;
 
 	@Autowired
 	private ClaireService claireService;

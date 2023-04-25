@@ -35,7 +35,4 @@ public interface AlisonWordRepository extends JpaRepository<PersistentAlisonWord
     @Query("FROM PersistentAlisonWord WHERE collection = :pack")
     List<PersistentAlisonWord> getAllWordsInModel(String pack);
 
-    @Query("FROM PersistentAlisonWord")
-    List<PersistentAlisonWord> getEverything();
-
 }

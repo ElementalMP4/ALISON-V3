@@ -5,13 +5,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Sentiment {
-    private List<AfinnWord> positives;
-    private List<AfinnWord> negatives;
-    private String originalWords;
-    private List<AfinnWord> tokens;
+    private final List<AfinnWord> positives;
+    private final List<AfinnWord> negatives;
+    private final String originalWords;
+    private final List<AfinnWord> tokens;
+    private final int score;
     private String pack;
-
-    private int score;
 
     public Sentiment(List<AfinnWord> positives, List<AfinnWord> negatives, String originalWords) {
         this.positives = positives;

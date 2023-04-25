@@ -2,9 +2,9 @@ package main.java.de.voidtech.alison.entities;
 
 public class AfinnWord
 {
-    private String word;
+    private final String word;
 
-    private int score;
+    private final int score;
 
     public AfinnWord(String word, int score) {
         this.word = word;

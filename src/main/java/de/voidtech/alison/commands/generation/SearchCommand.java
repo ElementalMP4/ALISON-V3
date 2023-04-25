@@ -6,7 +6,7 @@ import main.java.de.voidtech.alison.commands.CommandCategory;
 import main.java.de.voidtech.alison.commands.CommandContext;
 import main.java.de.voidtech.alison.service.BrowserService;
 import main.java.de.voidtech.alison.service.PrivacyService;
-import main.java.de.voidtech.alison.service.TextGenerationService;
+import main.java.de.voidtech.alison.service.AlisonService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.utils.Result;
@@ -24,7 +24,7 @@ public class SearchCommand extends AbstractCommand {
 	private static final String MISC_OPTS_SUFFIX = "&kae=d&k9=b";
 
 	@Autowired
-	private TextGenerationService textGenerationService;
+	private AlisonService textGenerationService;
 
 	@Autowired
 	private PrivacyService privacyService;

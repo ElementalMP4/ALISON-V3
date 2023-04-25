@@ -7,7 +7,7 @@ import main.java.de.voidtech.alison.commands.CommandContext;
 import main.java.de.voidtech.alison.service.ClaireService;
 import main.java.de.voidtech.alison.service.ConfigService;
 import main.java.de.voidtech.alison.service.PrivacyService;
-import main.java.de.voidtech.alison.service.TextGenerationService;
+import main.java.de.voidtech.alison.service.AlisonService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.json.JSONObject;
@@ -30,7 +30,7 @@ public class ConverseCommand extends AbstractCommand {
     private PrivacyService privacyService;
 
     @Autowired
-    private TextGenerationService textGenerationService;
+    private AlisonService textGenerationService;
 
     @Autowired
     private ConfigService config;
@@ -70,7 +70,7 @@ public class ConverseCommand extends AbstractCommand {
         for (int i = 0; i < 5; i++) {
             promptForAlison = getGavinResponse(promptForGavin);
             convoBuilder.append("Gavin: ").append(promptForAlison).append("\n\n");
-            promptForGavin = claireService.createReply(promptForAlison, TextGenerationService.PROMPT_LENGTH);
+            promptForGavin = claireService.createReply(promptForAlison, AlisonService.PROMPT_LENGTH);
             convoBuilder.append("Alison: ").append(promptForGavin).append("\n\n");
         }
 

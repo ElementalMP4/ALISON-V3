@@ -7,7 +7,7 @@ import main.java.de.voidtech.alison.commands.CommandContext;
 import main.java.de.voidtech.alison.entities.Sentiment;
 import main.java.de.voidtech.alison.service.AnalysisService;
 import main.java.de.voidtech.alison.service.PrivacyService;
-import main.java.de.voidtech.alison.service.TextGenerationService;
+import main.java.de.voidtech.alison.service.AlisonService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
@@ -24,7 +24,7 @@ public class MyStatsCommand extends AbstractCommand {
 	private PrivacyService privacyService;
 
 	@Autowired
-	private TextGenerationService textGenerationService;
+	private AlisonService textGenerationService;
 
 	@Autowired
 	private AnalysisService analysisService;

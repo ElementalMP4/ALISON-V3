@@ -11,7 +11,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
-public class TextGenerationService {
+public class AlisonService {
 
     @Autowired
     private AlisonWordRepository alisonWordRepository;
@@ -92,10 +92,6 @@ public class TextGenerationService {
     public List<String> getAllWords(String pack) {
         List<PersistentAlisonWord> list = alisonWordRepository.getAllWordsInModel(pack);
         return list.stream().map(PersistentAlisonWord::getWord).collect(Collectors.toList());
-    }
-
-    public List<PersistentAlisonWord> getAllWordsNoPack() {
-        return alisonWordRepository.getEverything();
     }
 
     public void learn(String ID, String contentRaw) {

@@ -5,7 +5,7 @@ import main.java.de.voidtech.alison.commands.AbstractCommand;
 import main.java.de.voidtech.alison.commands.CommandCategory;
 import main.java.de.voidtech.alison.commands.CommandContext;
 import main.java.de.voidtech.alison.service.PrivacyService;
-import main.java.de.voidtech.alison.service.TextGenerationService;
+import main.java.de.voidtech.alison.service.AlisonService;
 import main.java.de.voidtech.alison.service.WebhookManager;
 import main.java.de.voidtech.alison.util.ParsingUtils;
 import net.dv8tion.jda.api.entities.User;
@@ -19,7 +19,7 @@ import java.util.List;
 public class ImitateCommand extends AbstractCommand {
 
     @Autowired
-    private TextGenerationService textService;
+    private AlisonService textService;
 
     @Autowired
     private PrivacyService privacyService;

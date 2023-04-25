@@ -11,21 +11,17 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileCopyUtils;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+import static main.java.de.voidtech.alison.util.ResourceLoader.resourceAsString;
 
 @Service
 public class AnalysisService {
 
     @Autowired
-    private TextGenerationService textGenerationService;
+    private AlisonService textGenerationService;
 
     @Autowired
     private PrivacyService privacyService;
@@ -48,15 +44,6 @@ public class AnalysisService {
             AfinnWords.add(new AfinnWord(text, score));
         }
     }
-
-    private static String resourceAsString(Resource resource) {
-        try (Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8)) {
-            return FileCopyUtils.copyToString(reader);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 
     public Sentiment analyseCollection(String pack) {
         if (!textGenerationService.dataIsAvailableForID(pack)) return null;

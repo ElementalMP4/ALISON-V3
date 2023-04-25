@@ -1,7 +1,7 @@
 package main.java.de.voidtech.alison.routines;
 
 import main.java.de.voidtech.alison.annotations.Routine;
-import main.java.de.voidtech.alison.service.TextGenerationService;
+import main.java.de.voidtech.alison.service.AlisonService;
 import net.dv8tion.jda.api.entities.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class AlisonLearnNewSentenceRoutine extends AbstractRoutine {
 
     @Autowired
-    private TextGenerationService textGenerationService;
+    private AlisonService textGenerationService;
 
     @Override
     public void executeInternal(Message message) {
