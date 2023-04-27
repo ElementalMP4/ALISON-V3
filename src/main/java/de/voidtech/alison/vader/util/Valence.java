@@ -1,0 +1,27 @@
+package main.java.de.voidtech.alison.vader.util;
+
+public enum Valence {
+    DEFAULT_BOOSTING(0.293F),
+    DEFAULT_DAMPING(-0.293F),
+    ALL_CAPS_FACTOR(0.733F),
+    NEGATIVE_WORD_DAMPING_FACTOR(-0.74F),
+    EXCLAMATION_BOOSTING(0.292F),
+    QUESTION_MARK_BOOSTING(0.96F),
+    QUESTION_MARK_MAX_COUNT_BOOSTING(0.18F),
+    PRECEDING_TRIGRAM_HAVING_NEVER_DAMPING_FACTOR(1.25F),
+    PRECEDING_BIGRAM_HAVING_NEVER_DAMPING_FACTOR(1.5F),
+    ONE_WORD_DISTANCE_DAMPING_FACTOR(0.95F),
+    TWO_WORD_DISTANCE_DAMPING_FACTOR(0.9F),
+    PRE_CONJUNCTION_ADJUSTMENT_FACTOR(0.5F),
+    POST_CONJUNCTION_ADJUSTMENT_FACTOR(1.5F);
+
+    private final float value;
+
+    Valence(float value) {
+        this.value = value;
+    }
+
+    public float getValue() {
+        return value;
+    }
+}

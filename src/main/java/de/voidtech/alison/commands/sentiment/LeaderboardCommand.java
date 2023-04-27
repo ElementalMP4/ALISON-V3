@@ -4,8 +4,8 @@ import main.java.de.voidtech.alison.annotations.Command;
 import main.java.de.voidtech.alison.commands.AbstractCommand;
 import main.java.de.voidtech.alison.commands.CommandCategory;
 import main.java.de.voidtech.alison.commands.CommandContext;
-import main.java.de.voidtech.alison.entities.Sentiment;
 import main.java.de.voidtech.alison.service.AnalysisService;
+import main.java.de.voidtech.alison.vader.analyser.SentimentPolarities;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class LeaderboardCommand extends AbstractCommand {
 
 	@Override
 	public void execute(CommandContext context, List<String> args) {
-		List<Sentiment> allMembers = analyser.analyseServer(context.getGuild());
+		List<SentimentPolarities> allMembers = analyser.analyseServer(context.getGuild());
 		String leaderboard = createLeaderboardString(allMembers);
 		MessageEmbed leaderboardEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
@@ -33,24 +33,24 @@ public class LeaderboardCommand extends AbstractCommand {
 		context.reply(leaderboardEmbed);
 	}
 	
-	private String createLeaderboardString(List<Sentiment> allMembers) {
+	private String createLeaderboardString(List<SentimentPolarities> allMembers) {
 		StringBuilder leaderboard = new StringBuilder("**Top 5 members**\n");
-		List<Sentiment> topFive = allMembers.stream().limit(5).collect(Collectors.toList());
+		List<SentimentPolarities> topFive = allMembers.stream().limit(5).collect(Collectors.toList());
 		Collections.reverse(allMembers);
-		List<Sentiment> bottomFive = allMembers.stream().limit(5).collect(Collectors.toList());
+		List<SentimentPolarities> bottomFive = allMembers.stream().limit(5).collect(Collectors.toList());
 		Collections.reverse(allMembers);
 		Collections.reverse(bottomFive);
 		
-		for (Sentiment sentiment : topFive) {
+		for (SentimentPolarities sentiment : topFive) {
 			leaderboard.append(intToEmojiString(allMembers.indexOf(sentiment) + 1));
 			leaderboard.append("<@").append(sentiment.getPack()).append("> - `");
-			leaderboard.append(sentiment.getScore()).append("`\n");
+			leaderboard.append(sentiment.getCompoundPolarity()).append("`\n");
 		}
 		leaderboard.append("**Bottom 5 Members**\n");
-		for (Sentiment sentiment : bottomFive) {
+		for (SentimentPolarities sentiment: bottomFive) {
 			leaderboard.append(intToEmojiString(allMembers.indexOf(sentiment) + 1));
 			leaderboard.append("<@").append(sentiment.getPack()).append("> - `");
-			leaderboard.append(sentiment.getScore()).append("`\n");
+			leaderboard.append(sentiment.getCompoundPolarity()).append("`\n");
 		}
 		
 		return leaderboard.toString();

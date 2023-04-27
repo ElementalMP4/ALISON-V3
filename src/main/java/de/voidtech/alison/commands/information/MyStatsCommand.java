@@ -4,10 +4,10 @@ import main.java.de.voidtech.alison.annotations.Command;
 import main.java.de.voidtech.alison.commands.AbstractCommand;
 import main.java.de.voidtech.alison.commands.CommandCategory;
 import main.java.de.voidtech.alison.commands.CommandContext;
-import main.java.de.voidtech.alison.entities.Sentiment;
 import main.java.de.voidtech.alison.service.AnalysisService;
 import main.java.de.voidtech.alison.service.PrivacyService;
 import main.java.de.voidtech.alison.service.AlisonService;
+import main.java.de.voidtech.alison.vader.analyser.SentimentPolarities;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
@@ -50,14 +50,18 @@ public class MyStatsCommand extends AbstractCommand {
 	}
 
 	private MessageEmbed createStatsEmbed(User user) {
-		Sentiment sentiment = analysisService.analyseCollection(user.getId());
+		SentimentPolarities sentiment = analysisService.analyseCollection(user.getId());
         long wordCount = textGenerationService.getWordCountForCollection(user.getId());
         EmbedBuilder statsEmbedBuilder = new EmbedBuilder()
         		.setColor(Color.ORANGE)
         		.setTitle("Stats for " + user.getAsTag())
         		.setThumbnail(user.getAvatarUrl())
-        		.addField("Total Words", "```\n" + wordCount + "\n```", false)
-				.addField("Sentiment Score", "```\n" + sentiment.getScore() + "\n```", false);
+        		.addField(":grin: Positive Score", "```\n" + sentiment.getPositivePolarity() + "\n```", false)
+				.addField(":neutral_face: Neutral Score", "```\n" + sentiment.getNeutralPolarity() + "\n```", false)
+				.addField(":angry: Negative Score", "```\n" + sentiment.getNegativePolarity() + "\n```", false)
+				.addField("Compound Score", "```\n" + sentiment.getCompoundPolarity() + "\n```", false)
+				.addField("Total Word Count", "```\n" + wordCount + "\n```", false);
+
 		return statsEmbedBuilder.build();
 	}
 
