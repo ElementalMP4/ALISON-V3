@@ -101,6 +101,6 @@ public class HowToxicIsThis extends AbstractCommand {
 
     @Override
     public boolean requiresArguments() {
-        return true;
+        return false;
     }
 }
