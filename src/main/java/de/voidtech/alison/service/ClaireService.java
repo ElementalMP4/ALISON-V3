@@ -5,10 +5,6 @@ import main.java.de.voidtech.alison.persistence.entity.PersistentClairePair;
 import main.java.de.voidtech.alison.persistence.repository.ClairePairRepository;
 import net.dv8tion.jda.api.entities.Message;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,25 +14,14 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static main.java.de.voidtech.alison.util.ResourceLoader.resourceAsString;
-
 @Service
 public class ClaireService {
 
     @Autowired
     private ClairePairRepository repository;
 
-    @Value("classpath:ReallyCommonEnglish.txt")
-    private Resource reallyCommonEnglishResource;
-
-    //The most commonly used words in the english language. Source? Trust me bro
-    private static List<String> ReallyCommonEnglish;
-
-    @EventListener(ApplicationReadyEvent.class)
-    void loadReallyCommonEnglish() {
-        String commonEnglish = resourceAsString(reallyCommonEnglishResource);
-        ReallyCommonEnglish = Arrays.asList(commonEnglish.split("\n"));
-    }
+    @Autowired
+    private ReallyCommonEnglishService reallyCommonEnglishService;
 
     public String createReply(String prompt) {
         return createReply(prompt, AlisonService.CLAIRE_LENGTH);
@@ -94,7 +79,7 @@ public class ClaireService {
     }
 
     private List<String> getExistingResponseSentences(String message) {
-        List<String> words = filterOutPointlessContext(message);
+        List<String> words = reallyCommonEnglishService.filterOutPointlessContext(Arrays.asList(message.split(" ")));
         List<String> sentencePool = new ArrayList<>();
         for (String word : words) {
             List<PersistentClairePair> list = repository.getClairePairsContainingWord("%" + word.toLowerCase() + "%");
@@ -103,14 +88,6 @@ public class ClaireService {
             }
         }
         return sentencePool;
-    }
-
-    private List<String> filterOutPointlessContext(String message) {
-        List<String> words = Arrays.asList(message.split(" "));
-        List<String> filteredWords = words.stream()
-                .filter(w -> !ReallyCommonEnglish.contains(w.toLowerCase().replaceAll("[^a-z A-Z]", "")))
-                .collect(Collectors.toList());
-        return filteredWords.isEmpty() ? words : filteredWords;
     }
 
     public long getConversationCount() {

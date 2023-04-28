@@ -63,24 +63,16 @@ public class HowToxicAmICommand extends AbstractCommand {
 		context.reply(toxicityEmbed);
 	}
 
-	private String getMessage(SentimentPolarities s) {
-		float neutral = s.getNeutralPolarity();
-		float positive = s.getPositivePolarity();
-		float negative = s.getNegativePolarity();
-		if (positive > neutral && positive > negative) return "You are positively epic";
-		if (neutral > positive && neutral > negative) return "You are positively unobjectionable";
-		if (negative > positive && negative > neutral) return "You are known by the state of california to cause crippling sadness";
-		return "I have no idea how to judge you.";
+	private String getMessage(SentimentPolarities howToxic) {
+		return howToxic.getCompoundPolarity() < 0 ? "You are known by the state of california to cause crippling sadness"
+				: howToxic.getCompoundPolarity() > 0 ? "You are positively epic"
+				: "You are positively unobjectionable";
 	}
 
-	private Color getColour(SentimentPolarities s) {
-		float neutral = s.getNeutralPolarity();
-		float positive = s.getPositivePolarity();
-		float negative = s.getNegativePolarity();
-		if (positive > neutral && positive > negative) return Color.GREEN;
-		if (neutral > positive && neutral > negative) return Color.ORANGE;
-		if (negative > positive && negative > neutral) return Color.RED;
-		return Color.GRAY;
+	private Color getColour(SentimentPolarities howToxic) {
+		return howToxic.getCompoundPolarity() < 0 ? Color.RED
+				: howToxic.getCompoundPolarity() > 0 ? Color.GREEN
+				: Color.ORANGE;
 	}
 
 	@Override

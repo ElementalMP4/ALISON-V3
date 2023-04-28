@@ -20,13 +20,17 @@ public class AnalysisService {
     @Autowired
     private PrivacyService privacyService;
 
+    @Autowired
+    private ReallyCommonEnglishService reallyCommonEnglishService;
+
     private static final List<String> POSITIVE_EMOTES = Arrays.asList("❤", "🥰", "😘", "😄");
     private static final List<String> NEGATIVE_EMOTES = Arrays.asList("💔", "😔", "😭", "😢");
 
     public SentimentPolarities analyseCollection(String pack) {
         if (!textGenerationService.dataIsAvailableForID(pack)) return null;
-        String words = String.join(" ", textGenerationService.getAllWords(pack));
-        SentimentPolarities sentiment = analyseSentence(words);
+        List<String> words = textGenerationService.getAllWords(pack);
+        String everythingAllTogether = String.join(" ", reallyCommonEnglishService.filterOutPointlessContext(words));
+        SentimentPolarities sentiment = analyseSentence(everythingAllTogether);
         sentiment.setPack(pack);
         return sentiment;
     }

@@ -40,24 +40,16 @@ public class HowToxicIsThisServerCommand extends AbstractCommand {
 		context.reply(toxicityEmbed);
 	}
 
-	private String getMessage(SentimentPolarities s) {
-		float neutral = s.getNeutralPolarity();
-		float positive = s.getPositivePolarity();
-		float negative = s.getNegativePolarity();
-		if (positive > neutral && positive > negative) return "You are all amazingly perfect people with zero flaws";
-		if (neutral > positive && neutral > negative) return "There's okay people in here somewhere...";
-		if (negative > positive && negative > neutral) return "You are all terrible people go and sit in the corner and think about your actions";
-		return "I have no idea how to judge you.";
+	private String getMessage(SentimentPolarities howToxic) {
+		return howToxic.getCompoundPolarity() < 0 ? "This is one of the worst servers I have ever seen"
+				: howToxic.getCompoundPolarity() > 0 ? "This server is a delightfully pleasant place"
+				: "This server is neither good nor bad";
 	}
 
-	private Color getColour(SentimentPolarities s) {
-		float neutral = s.getNeutralPolarity();
-		float positive = s.getPositivePolarity();
-		float negative = s.getNegativePolarity();
-		if (positive > neutral && positive > negative) return Color.GREEN;
-		if (neutral > positive && neutral > negative) return Color.ORANGE;
-		if (negative > positive && negative > neutral) return Color.RED;
-		return Color.GRAY;
+	private Color getColour(SentimentPolarities howToxic) {
+		return howToxic.getCompoundPolarity() < 0 ? Color.RED
+				: howToxic.getCompoundPolarity() > 0 ? Color.GREEN
+				: Color.ORANGE;
 	}
 
 	@Override
