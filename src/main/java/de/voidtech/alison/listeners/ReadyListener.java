@@ -15,7 +15,7 @@ public class ReadyListener implements EventListener
     
     public void onEvent(final GenericEvent event) {
         if (event instanceof ReadyEvent) {
-            final String clientName = ((ReadyEvent)event).getJDA().getSelfUser().getAsTag();
+            final String clientName = ((ReadyEvent)event).getJDA().getSelfUser().getName();
             LOGGER.log(Level.INFO, "Alison logged in as " + clientName);
         }
     }

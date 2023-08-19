@@ -30,9 +30,9 @@ public abstract class AbstractCommand {
         ExecutorService commandExecutor = threadManager.getThreadByName("T-Command");
         Runnable commandThread = () -> {
             Stopwatch stopwatch = new Stopwatch().start();
-            LOGGER.log(Level.INFO, "Running command: " + this.getName() + " by " + context.getAuthor().getAsTag());
+            LOGGER.log(Level.INFO, "Running command: " + this.getName() + " by " + context.getAuthor().getName());
             execute(context, args);
-            LOGGER.log(Level.INFO, "Command " + this.getName() + " by " + context.getAuthor().getAsTag()
+            LOGGER.log(Level.INFO, "Command " + this.getName() + " by " + context.getAuthor().getName()
                     + " Took " + stopwatch.stop().getTime() + "ms");
         };
         commandExecutor.execute(commandThread);

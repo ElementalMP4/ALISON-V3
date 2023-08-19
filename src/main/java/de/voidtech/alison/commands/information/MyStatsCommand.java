@@ -54,7 +54,7 @@ public class MyStatsCommand extends AbstractCommand {
         long wordCount = textGenerationService.getWordCountForCollection(user.getId());
         EmbedBuilder statsEmbedBuilder = new EmbedBuilder()
         		.setColor(Color.ORANGE)
-        		.setTitle("Stats for " + user.getAsTag())
+        		.setTitle("Stats for " + user.getName())
         		.setThumbnail(user.getAvatarUrl())
         		.addField(":grin: Positive Score", "```\n" + sentiment.getPositivePolarity() + "\n```", false)
 				.addField(":neutral_face: Neutral Score", "```\n" + sentiment.getNeutralPolarity() + "\n```", false)

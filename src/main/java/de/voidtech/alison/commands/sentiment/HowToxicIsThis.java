@@ -39,9 +39,9 @@ public class HowToxicIsThis extends AbstractCommand {
         MessageEmbed toxicityEmbed = new EmbedBuilder()
                 .setColor(getColour(sentiment))
                 .setTitle("Sentiment Report")
-                .addField(":grin: Positive Score", "```\n" + sentiment.getPositivePolarity() + "\n```", false)
-                .addField(":neutral_face: Neutral Score", "```\n" + sentiment.getNeutralPolarity() + "\n```", false)
-                .addField(":angry: Negative Score", "```\n" + sentiment.getNegativePolarity() + "\n```", false)
+                .addField(":grin: Positive Score", "```\n" + sentiment.getPositivePolarity() + "\n```", true)
+                .addField(":neutral_face: Neutral Score", "```\n" + sentiment.getNeutralPolarity() + "\n```", true)
+                .addField(":angry: Negative Score", "```\n" + sentiment.getNegativePolarity() + "\n```", true)
                 .addField("Compound Score", "```\n" + sentiment.getCompoundPolarity() + "\n```", false)
                 .setFooter(getMessage(sentiment))
                 .build();

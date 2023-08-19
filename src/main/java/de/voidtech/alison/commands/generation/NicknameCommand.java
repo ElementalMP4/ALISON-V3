@@ -55,7 +55,7 @@ public class NicknameCommand extends AbstractCommand {
 		else {
 			Member finalMember = member;
 			new ButtonListener(context, waiter,
-					"Change **" + member.getUser().getAsTag() + "'s** nickname to **" + nickname + "**?",
+					"Change **" + member.getUser().getName() + "'s** nickname to **" + nickname + "**?",
 					result -> handleNicknameUpdateChoice(finalMember, nickname, context, result));
 		}
 	}
@@ -71,15 +71,15 @@ public class NicknameCommand extends AbstractCommand {
 				return;
 			}
 			if (!context.getGuild().getSelfMember().canInteract(member)) {
-				result.getMessage().editMessage("I don't have permission to change **" + member.getUser().getAsTag() +
-						"'s**  nickname! I need my role to be above **" + member.getUser().getAsTag() + "'s** highest role! The nickname I generated for you was **" + nickname + "**").queue();
+				result.getMessage().editMessage("I don't have permission to change **" + member.getUser().getName() +
+						"'s**  nickname! I need my role to be above **" + member.getUser().getName() + "'s** highest role! The nickname I generated for you was **" + nickname + "**").queue();
 				return;
 			}
 			String oldNickname = member.getEffectiveName();
 			member.modifyNickname(nickname).complete();
-			result.getMessage().editMessage("**" + member.getUser().getAsTag() + "'s** Nickname changed to **" + nickname + "** from **" + oldNickname).queue();
+			result.getMessage().editMessage("**" + member.getUser().getName() + "'s** Nickname changed to **" + nickname + "** from **" + oldNickname + "**").queue();
 		} else {
-			result.getMessage().editMessage("**" + member.getUser().getAsTag() + "'s** Nickname has not been changed to **" + nickname + "**").queue();
+			result.getMessage().editMessage("**" + member.getUser().getName() + "'s** Nickname has not been changed to **" + nickname + "**").queue();
 		}
 	}
 
