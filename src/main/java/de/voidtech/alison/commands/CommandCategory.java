@@ -4,7 +4,6 @@ public enum CommandCategory {
     TEXT_GENERATION("generation", ":robot:"),
     PRIVACY("privacy", ":lock:"),
     INFORMATION("information", ":books:"),
-    MASTER("master", ":crown:"),
     MISC("misc", ":video_game:"),
     SENTIMENT_ANALYSIS("sentiment", ":heart:");
 

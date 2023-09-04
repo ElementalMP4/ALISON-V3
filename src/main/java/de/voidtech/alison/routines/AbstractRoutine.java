@@ -9,7 +9,8 @@ public abstract class AbstractRoutine {
     @Autowired
     private ThreadManager threadManager;
 
-    public void run(Message message) {
+    public void run(Message message, boolean messageIsCommand) {
+        if (ignoreCommands() && messageIsCommand) return;
         Runnable routineThreadRunnable = () -> executeInternal(message);
         threadManager.getThreadByName("T-Routine").execute(routineThreadRunnable);
     }
@@ -19,4 +20,5 @@ public abstract class AbstractRoutine {
     public abstract String getName();
     public abstract String getDescription();
     public abstract boolean isDmCapable();
+    public abstract boolean ignoreCommands();
 }

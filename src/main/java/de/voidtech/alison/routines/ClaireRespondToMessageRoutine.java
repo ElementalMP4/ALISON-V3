@@ -34,4 +34,9 @@ public class ClaireRespondToMessageRoutine extends AbstractRoutine {
     public boolean isDmCapable() {
         return true;
     }
+
+    @Override
+    public boolean ignoreCommands() {
+        return true;
+    }
 }

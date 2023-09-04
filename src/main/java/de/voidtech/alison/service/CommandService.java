@@ -1,7 +1,6 @@
 package main.java.de.voidtech.alison.service;
 
 import main.java.de.voidtech.alison.commands.AbstractCommand;
-import main.java.de.voidtech.alison.commands.CommandCategory;
 import main.java.de.voidtech.alison.commands.CommandContext;
 import main.java.de.voidtech.alison.listeners.MessageListener;
 import main.java.de.voidtech.alison.routines.AbstractRoutine;
@@ -12,8 +11,6 @@ import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
@@ -49,8 +46,11 @@ public class CommandService {
     public void handleMessage(Message message) {
         if (message.getAuthor().getId().equals(message.getJDA().getSelfUser().getId())) return;
         String prefix = config.getDefaultPrefix();
-        performNonCommandMessageActions(message);
-        if (!shouldHandleAsChatCommand(prefix, message)) {
+
+        boolean messageIsCommand = shouldHandleAsChatCommand(prefix, message);
+
+        performNonCommandMessageActions(message, messageIsCommand);
+        if (!messageIsCommand) {
             return;
         }
 
@@ -60,21 +60,21 @@ public class CommandService {
     }
 
 
-    private void performNonCommandMessageActions(Message message) {
+    private void performNonCommandMessageActions(Message message, boolean messageIsCommand) {
         if (privacyService.channelIsIgnored(message))
             return;
         if (message.getContentRaw().equals(""))
             return;
         if (privacyService.userHasOptedOut(message.getAuthor().getId()))
             return;
-        runMessageRoutines(message);
+        runMessageRoutines(message, messageIsCommand);
     }
 
-    private void runMessageRoutines(Message message) {
+    private void runMessageRoutines(Message message, boolean messageIsCommand) {
         for (AbstractRoutine routine : routines) {
             if (message.getChannel().getType().equals(ChannelType.PRIVATE)) {
-                if (routine.isDmCapable()) routine.run(message);
-            } else routine.run(message);
+                if (routine.isDmCapable()) routine.run(message, messageIsCommand);
+            } else routine.run(message, messageIsCommand);
         }
     }
 
@@ -92,10 +92,6 @@ public class CommandService {
             LOGGER.log(Level.INFO, "Command not found: " + messageArray.get(0));
             tryLevenshteinOptions(message, messageArray.get(0));
         } else {
-            if (commandOpt.getCommandCategory() == CommandCategory.MASTER && !message.getAuthor().getId().equals(config.getMaster())) {
-                message.reply("This command is reserved for the bot master only!").mentionRepliedUser(false).queue();
-                return;
-            }
             commandOpt.run(new CommandContext(message), messageArray.subList(1, messageArray.size()));
         }
     }

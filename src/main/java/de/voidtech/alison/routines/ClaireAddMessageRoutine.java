@@ -30,4 +30,9 @@ public class ClaireAddMessageRoutine extends AbstractRoutine {
     public boolean isDmCapable() {
         return false;
     }
+
+    @Override
+    public boolean ignoreCommands() {
+        return true;
+    }
 }

@@ -65,4 +65,9 @@ public class SpinnerRoutine extends AbstractRoutine {
     public boolean isDmCapable() {
         return false;
     }
+
+    @Override
+    public boolean ignoreCommands() {
+        return false;
+    }
 }
