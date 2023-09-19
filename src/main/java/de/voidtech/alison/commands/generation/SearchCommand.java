@@ -13,6 +13,8 @@ import net.dv8tion.jda.api.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Command
@@ -57,7 +59,7 @@ public class SearchCommand extends AbstractCommand {
 		Result<Member> userResult = context.getGuild().retrieveMemberById(ID).mapToResult().complete();
 		if (userResult.isSuccess()) {
 			User user = userResult.get().getUser();
-			String url = SEARCH_URL + search
+			String url = SEARCH_URL + URLEncoder.encode(search)
 					+ (canSendNsfw(context.getMessage().getChannel()) ? SAFE_MODE_DISABLED : SAFE_MODE_ENABLED) 
 					+ MISC_OPTS_SUFFIX;
 			byte[] image = browser.searchAndScreenshot(url);
