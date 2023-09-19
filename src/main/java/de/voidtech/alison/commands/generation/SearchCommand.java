@@ -62,7 +62,7 @@ public class SearchCommand extends AbstractCommand {
 					+ MISC_OPTS_SUFFIX;
 			byte[] image = browser.searchAndScreenshot(url);
 			MessageEmbed searchEmbed = new EmbedBuilder()
-					.setTitle(user.getName() + "'s search history probably contains:")
+					.setTitle(user.getName() + "'s search history probably contains:", url)
 					.setColor(Color.ORANGE)
 					.setImage("attachment://search.png")
 					.build();
