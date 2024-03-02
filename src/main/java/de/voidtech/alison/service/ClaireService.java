@@ -102,7 +102,7 @@ public class ClaireService {
 
     private boolean messageCanBeAdded(Message message) {
         return message.getReferencedMessage() != null
-                && !message.getContentRaw().equals("")
-                && !message.getReferencedMessage().getContentRaw().equals("");
+                && !message.getContentRaw().isEmpty()
+                && !message.getReferencedMessage().getContentRaw().isEmpty();
     }
 }
