@@ -5,6 +5,7 @@ import main.java.de.voidtech.alison.vader.analyser.SentimentPolarities;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,8 +57,9 @@ public class AnalysisService {
         return SentimentAnalyser.averageListOfSentiments(sentiments);
     }
 
-    private String getRandomEmote(List<String> emotes) {
-        return emotes.get(new Random().nextInt(emotes.size()));
+    private Emoji getRandomEmote(List<String> emotes) {
+        String emote = emotes.get(new Random().nextInt(emotes.size()));
+        return Emoji.fromUnicode(emote);
     }
 
     public void respondToAlisonMention(Message message) {

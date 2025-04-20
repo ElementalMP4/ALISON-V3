@@ -1,7 +1,7 @@
 package main.java.de.voidtech.alison.listeners;
 
 import net.dv8tion.jda.api.events.GenericEvent;
-import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +15,7 @@ public class ReadyListener implements EventListener
     
     public void onEvent(final GenericEvent event) {
         if (event instanceof ReadyEvent) {
-            final String clientName = ((ReadyEvent)event).getJDA().getSelfUser().getName();
+            final String clientName = event.getJDA().getSelfUser().getName();
             LOGGER.log(Level.INFO, "Alison logged in as " + clientName);
         }
     }

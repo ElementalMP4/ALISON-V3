@@ -3,7 +3,7 @@ package main.java.de.voidtech.alison.commands;
 import main.java.de.voidtech.alison.listeners.MessageListener;
 import main.java.de.voidtech.alison.service.ThreadManager;
 import main.java.de.voidtech.alison.util.Stopwatch;
-import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;

@@ -4,8 +4,8 @@ import main.java.de.voidtech.alison.persistence.entity.IgnoredChannel;
 import main.java.de.voidtech.alison.persistence.entity.IgnoredUser;
 import main.java.de.voidtech.alison.persistence.repository.IgnoredChannelRepository;
 import main.java.de.voidtech.alison.persistence.repository.IgnoredUserRepository;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,10 +1,10 @@
 package main.java.de.voidtech.alison.commands.privacy;
 
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import main.java.de.voidtech.alison.annotations.Command;
 import main.java.de.voidtech.alison.commands.AbstractCommand;
 import main.java.de.voidtech.alison.commands.CommandCategory;
 import main.java.de.voidtech.alison.commands.CommandContext;
+import main.java.de.voidtech.alison.listeners.EventWaiter;
 import main.java.de.voidtech.alison.service.PrivacyService;
 import main.java.de.voidtech.alison.service.AlisonService;
 import main.java.de.voidtech.alison.util.ButtonListener;

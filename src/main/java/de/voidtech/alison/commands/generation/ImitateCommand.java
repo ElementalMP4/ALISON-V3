@@ -49,7 +49,7 @@ public class ImitateCommand extends AbstractCommand {
             return;
         }
 
-        Webhook hook = webhookManager.getOrCreateWebhook(context.getMessage().getTextChannel(), "ALISON",
+        Webhook hook = webhookManager.getOrCreateWebhook(context.getMessage().getChannel().asTextChannel(), "ALISON",
                 context.getJDA().getSelfUser().getId());
 
         if (ParsingUtils.isSnowflake(ID)) {

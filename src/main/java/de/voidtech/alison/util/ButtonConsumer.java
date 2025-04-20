@@ -1,7 +1,7 @@
 package main.java.de.voidtech.alison.util;
 
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 
 public class ButtonConsumer {
 
@@ -9,9 +9,9 @@ public class ButtonConsumer {
     public static final String FALSE_EMOTE = "\u274C";
 
     private final Message message;
-    private final ButtonClickEvent button;
+    private final ButtonInteractionEvent button;
 
-    public ButtonConsumer(ButtonClickEvent button, Message message) {
+    public ButtonConsumer(ButtonInteractionEvent button, Message message) {
         this.message = message;
         this.button = button;
         if (!this.button.isAcknowledged())  {
@@ -22,10 +22,6 @@ public class ButtonConsumer {
 
     public Message getMessage() {
         return this.message;
-    }
-
-    public ButtonClickEvent getButton() {
-        return this.button;
     }
 
     public boolean userSaidYes() {

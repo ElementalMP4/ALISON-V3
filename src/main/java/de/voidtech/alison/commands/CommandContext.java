@@ -3,6 +3,8 @@ package main.java.de.voidtech.alison.commands;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.awt.*;
 import java.util.function.Consumer;
@@ -39,7 +41,8 @@ public class CommandContext {
     }
 
     public void replyWithFile(byte[] attachment, String attachmentName, MessageEmbed embed) {
-        this.message.replyEmbeds(embed).mentionRepliedUser(false).addFile(attachment, attachmentName).queue();
+        FileUpload upload = FileUpload.fromData(attachment, attachmentName);
+        this.message.replyEmbeds(embed).mentionRepliedUser(false).addFiles(upload).queue();
     }
 
     public void replyErrorEmbed(String message) {

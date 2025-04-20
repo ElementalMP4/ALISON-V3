@@ -2,8 +2,8 @@ package main.java.de.voidtech.alison.routines;
 
 import main.java.de.voidtech.alison.annotations.Routine;
 import main.java.de.voidtech.alison.service.ClaireService;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Routine
@@ -14,7 +14,7 @@ public class ClaireRespondToMessageRoutine extends AbstractRoutine {
 
     @Override
     public void executeInternal(Message message) {
-        if (message.getMentionedUsers().contains(message.getJDA().getSelfUser())
+        if (message.getMentions().getUsers().contains(message.getJDA().getSelfUser())
                 || message.getChannel().getType().equals(ChannelType.PRIVATE)) {
             message.reply(claireService.createReply(message.getContentDisplay())).mentionRepliedUser(false).queue();
         }

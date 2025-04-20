@@ -26,6 +26,6 @@ public class ParsingUtils {
     }
 
     public static boolean isSnowflake(String input) {
-        return isInteger(input) && input.length() < 20 && input.length() > 17;
+        return isInteger(input) && input.length() < 22 && input.length() > 17;
     }
 }

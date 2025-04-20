@@ -15,7 +15,7 @@
 
 package main.java.de.voidtech.alison;
 
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import main.java.de.voidtech.alison.listeners.EventWaiter;
 import main.java.de.voidtech.alison.listeners.MessageListener;
 import main.java.de.voidtech.alison.listeners.ReadyListener;
 import main.java.de.voidtech.alison.service.ConfigService;
@@ -44,7 +44,7 @@ public class Alison
     @Bean
     @Order(3)
     @Autowired
-    public JDA getJDA(final MessageListener msgListener, final ReadyListener readyListener, EventWaiter waiter) throws LoginException, InterruptedException {
+    public JDA getJDA(final MessageListener msgListener, final ReadyListener readyListener, final EventWaiter waiter) throws LoginException, InterruptedException {
         final ConfigService config = new ConfigService();
         return JDABuilder.createLight(config.getToken()).enableIntents(getNonPrivilegedIntents())
         		.setMemberCachePolicy(MemberCachePolicy.ALL)
@@ -61,11 +61,6 @@ public class Alison
         final List<GatewayIntent> gatewayIntents = new ArrayList<>(Arrays.asList(GatewayIntent.values()));
         gatewayIntents.remove(GatewayIntent.GUILD_PRESENCES);
         return gatewayIntents;
-    }
-    
-    @Bean
-    public EventWaiter getEventWaiter() {
-        return new EventWaiter();
     }
     
     public static void main(final String[] args) {

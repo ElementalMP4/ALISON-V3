@@ -48,11 +48,11 @@ public class IgnoredChannelsCommand extends AbstractCommand {
 	}
 
 	private void removeFromBlacklist(CommandContext context) {
-		if (context.getMessage().getMentionedChannels().isEmpty()) {
+		if (context.getMessage().getMentions().getChannels().isEmpty()) {
 			context.reply("You need to mention a channel to remove from the blacklist!");
 			return;
 		}
-		String channelID = context.getMessage().getMentionedChannels().get(0).getId();
+		String channelID = context.getMessage().getMentions().getChannels().get(0).getId();
 		if (privacyService.channelIsIgnored(channelID, context.getGuild().getId())) {
 			privacyService.unignoreChannel(channelID, context.getGuild().getId());
 			context.reply("Channel <#" + channelID + "> has been whitelisted!");
@@ -62,11 +62,11 @@ public class IgnoredChannelsCommand extends AbstractCommand {
 	}
 
 	private void addToBlacklist(CommandContext context) {
-		if (context.getMessage().getMentionedChannels().isEmpty()) {
+		if (context.getMessage().getMentions().getChannels().isEmpty()) {
 			context.reply("You need to mention a channel to add to the blacklist!");
 			return;
 		}
-		String channelID = context.getMessage().getMentionedChannels().get(0).getId();
+		String channelID = context.getMessage().getMentions().getChannels().get(0).getId();
 		if (privacyService.channelIsIgnored(channelID, context.getGuild().getId())) {
 			context.reply("Channel <#" + channelID + "> is already blacklisted!");
 		} else {
