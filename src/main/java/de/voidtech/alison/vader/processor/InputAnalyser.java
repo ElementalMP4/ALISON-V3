@@ -1,15 +1,15 @@
 package main.java.de.voidtech.alison.vader.processor;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.function.Consumer;
-
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.WhitespaceTokenizer;
 import org.apache.lucene.analysis.miscellaneous.LengthFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.function.Consumer;
 
 
 public class InputAnalyser implements InputAnalyserInterface {

@@ -1,11 +1,5 @@
 package main.java.de.voidtech.alison.vader.analyser;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.google.common.base.Preconditions;
 import main.java.de.voidtech.alison.vader.processor.TextProperties;
 import main.java.de.voidtech.alison.vader.util.Constants;
@@ -13,6 +7,12 @@ import main.java.de.voidtech.alison.vader.util.SentimentModifyingTokens;
 import main.java.de.voidtech.alison.vader.util.Utils;
 import main.java.de.voidtech.alison.vader.util.Valence;
 import org.apache.commons.lang3.StringUtils;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class SentimentAnalyser {
 
