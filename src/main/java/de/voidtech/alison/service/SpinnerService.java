@@ -7,9 +7,12 @@ import net.dv8tion.jda.api.entities.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,11 +25,26 @@ public class SpinnerService {
     private List<Spinner> spinnerCache;
 
     public static final Logger LOGGER = Logger.getLogger(MessageListener.class.getSimpleName());
+    
+    @Autowired
+    private SpinnerRepository spinnerRepository;
 
     @EventListener(ApplicationReadyEvent.class)
     void reloadCache() {
         this.spinnerCache = repository.getSpinningSpinners();
         LOGGER.log(Level.INFO, "Loaded " + this.spinnerCache.size() + " spinners into cache");
+
+        TimerTask task = new TimerTask() {
+            public void run() {
+                for (Spinner spinner : spinnerCache) {
+                    if (!spinner.isStillSpinning()) return;
+                    spinner.updateDuration();
+                    spinnerRepository.save(spinner);
+                }
+            }
+        };
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(task, 0, 5000);
     }
 
     private Spinner getSpinnerFromCache(String channelID) {
@@ -51,5 +69,7 @@ public class SpinnerService {
         return spinner;
     }
 
-
+    public List<Spinner> getServerLeaderboard(String serverId) {
+        return spinnerRepository.getSpinnerLeaderboardForServer(serverId, PageRequest.of(0, 10));
+    }
 }

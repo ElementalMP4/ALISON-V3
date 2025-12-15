@@ -4,6 +4,7 @@ import main.java.de.voidtech.alison.annotations.Command;
 import main.java.de.voidtech.alison.commands.AbstractCommand;
 import main.java.de.voidtech.alison.commands.CommandCategory;
 import main.java.de.voidtech.alison.commands.CommandContext;
+import main.java.de.voidtech.alison.persistence.entity.Spinner;
 import main.java.de.voidtech.alison.service.SpinnerService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -28,8 +29,32 @@ public class SpinCommand extends AbstractCommand {
                     .build();
             commandContext.reply(spinEmbed);
         } else {
-            //TODO
+            switch (args.get(0).toLowerCase()) {
+                case "leaderboard", "lb" -> showLeaderboard(commandContext);
+                default -> commandContext.reply("Unknown command");
+            }
         }
+    }
+
+    private void showLeaderboard(CommandContext commandContext) {
+        List<Spinner> leaderboard = spinnerService.getServerLeaderboard(commandContext.getGuild().getId());
+        StringBuilder leaderboardBuilder = new StringBuilder();
+
+        int pos = 1;
+        for (Spinner spinner : leaderboard) {
+            leaderboardBuilder.append("**%d - <@%s> in <#%s>**\n".formatted(pos, spinner.getUserID(), spinner.getChannelID()));
+            leaderboardBuilder.append("```\n");
+            leaderboardBuilder.append("Lasted: %s\n".formatted(spinner.durationAsText()));
+            leaderboardBuilder.append("```\n\n");
+        }
+
+        MessageEmbed leaderboardEmbed = new EmbedBuilder()
+                .setColor(Color.ORANGE)
+                .setTitle("%s Leaderboard".formatted(commandContext.getGuild().getName()))
+                .setDescription(leaderboardBuilder.toString())
+                .build();
+
+        commandContext.reply(leaderboardEmbed);
     }
 
     @Override
