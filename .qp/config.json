@@ -1,0 +1,15 @@
+{
+  "app_name": "alison",
+  "build_files": [
+    "*"
+  ],
+  "install_files": [
+    {
+      "file": "target/Alison-0.0.1.jar",
+      "from": "build"
+    }
+  ],
+  "build_script": "build.sh",
+  "systemd": true,
+  "exec": "/usr/bin/java -jar /opt/barista-gerald/target/Alison-0.0.1.jar"
+}
