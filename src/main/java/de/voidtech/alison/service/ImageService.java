@@ -34,7 +34,7 @@ public class ImageService {
         ctx.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         ctx.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
-        BufferedImage backgroundImage = loadImage(avatarUrl);
+        BufferedImage backgroundImage = loadImage(avatarUrl + "?size=2048");
         ctx.drawImage(backgroundImage, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, null);
 
         ctx.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.75f));

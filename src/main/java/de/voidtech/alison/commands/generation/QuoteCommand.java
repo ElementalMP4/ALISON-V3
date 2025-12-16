@@ -77,7 +77,7 @@ public class QuoteCommand extends AbstractCommand {
 
 	private byte[] getQuoteImage(User user, String quote) {
 		try {
-			return imageService.createQuoteImage(user.getAvatarUrl(), user.getName(), quote);
+			return imageService.createQuoteImage(user.getEffectiveAvatarUrl(), user.getName(), quote);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
