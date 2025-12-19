@@ -1,15 +1,13 @@
 package main.java.de.voidtech.alison.service;
 
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-@Service
-@Order(1)
+@Configuration
 public class ConfigService {
 
     private final Properties config;

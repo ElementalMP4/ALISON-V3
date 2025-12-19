@@ -1,5 +1,6 @@
 package main.java.de.voidtech.alison.commands;
 
+import main.java.de.voidtech.alison.service.ConfigService;
 import main.java.de.voidtech.alison.service.ThreadManager;
 import main.java.de.voidtech.alison.util.Stopwatch;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -14,16 +15,24 @@ public abstract class AbstractCommand {
     @Autowired
     private ThreadManager threadManager;
 
+    @Autowired
+    private ConfigService configService;
+
     public static final Logger LOGGER = Logger.getLogger(AbstractCommand.class.getSimpleName());
 
     public void run(CommandContext context) {
         try {
+            if (this.getCommandCategory() == CommandCategory.MANAGEMENT && !configService.getMaster().equals(context.getAuthor().getId())) {
+                context.reply("Only the bot master can use this command!");
+                return;
+            }
+
             if (!this.isDmCapable() && context.getChannel().getType().equals(ChannelType.PRIVATE)) {
                 context.reply("This command only works in guilds!");
                 return;
             }
 
-            if (!context.isSlashCommand() && this.requiresArguments() && context.getArgs().isEmpty()) {
+            if (this.requiresArguments() && !context.hasArgs()) {
                 context.reply("This command needs arguments but you didn't supply any!\n" + this.getUsage());
                 return;
             }

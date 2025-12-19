@@ -4,7 +4,6 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
@@ -139,4 +138,11 @@ public class CommandContext {
         event.replyEmbeds(embed).mentionRepliedUser(false).queue(consumer);
     }
 
+    public boolean hasArgs() {
+        if (this.isSlashCommand()) {
+            return !this.event.getOptions().isEmpty();
+        } else {
+            return !this.args.isEmpty();
+        }
+    }
 }

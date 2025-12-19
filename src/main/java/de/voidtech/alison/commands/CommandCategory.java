@@ -5,6 +5,7 @@ public enum CommandCategory {
     PRIVACY("privacy", ":lock:"),
     INFORMATION("information", ":books:"),
     MISC("misc", ":video_game:"),
+    MANAGEMENT("management", ":tools:"),
     SENTIMENT_ANALYSIS("sentiment", ":heart:");
 
     private final String category;
