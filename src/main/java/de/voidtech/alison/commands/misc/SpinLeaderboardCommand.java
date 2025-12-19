@@ -5,48 +5,65 @@ import main.java.de.voidtech.alison.commands.AbstractCommand;
 import main.java.de.voidtech.alison.commands.CommandCategory;
 import main.java.de.voidtech.alison.commands.CommandContext;
 import main.java.de.voidtech.alison.commands.SlashCommandOptions;
+import main.java.de.voidtech.alison.persistence.entity.Spinner;
 import main.java.de.voidtech.alison.service.SpinnerService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
+import java.util.List;
 
 @Command
-public class SpinCommand extends AbstractCommand {
+public class SpinLeaderboardCommand extends AbstractCommand {
+
+    private final SpinnerService spinnerService;
 
     @Autowired
-    private SpinnerService spinnerService;
+    public SpinLeaderboardCommand(final SpinnerService spinnerService) {
+        this.spinnerService = spinnerService;
+    }
 
     @Override
     public void execute(CommandContext commandContext) {
-        spinnerService.createSpinner(commandContext.getMessage());
-        MessageEmbed spinEmbed = new EmbedBuilder()
+        List<Spinner> leaderboard = spinnerService.getServerLeaderboard(commandContext.getGuild().getId());
+        StringBuilder leaderboardBuilder = new StringBuilder();
+
+        int pos = 1;
+        for (Spinner spinner : leaderboard) {
+            leaderboardBuilder.append("**%d - <@%s> in <#%s>**\n".formatted(pos, spinner.getUserID(), spinner.getChannelID()));
+            leaderboardBuilder.append("```\n");
+            leaderboardBuilder.append("Lasted: %s\n".formatted(spinner.durationAsText()));
+            leaderboardBuilder.append("```\n\n");
+        }
+
+        MessageEmbed leaderboardEmbed = new EmbedBuilder()
                 .setColor(Color.ORANGE)
-                .setDescription("<@%s>'s spinner is spinning...".formatted(commandContext.getAuthor().getId()))
+                .setTitle("%s Leaderboard".formatted(commandContext.getGuild().getName()))
+                .setDescription(leaderboardBuilder.toString())
                 .build();
-        commandContext.reply(spinEmbed);
+
+        commandContext.reply(leaderboardEmbed);
     }
 
     @Override
     public String getName() {
-        return "spin";
+        return "spinlb";
     }
 
     @Override
     public String getUsage() {
-        return "spin\n" +
-                "spin leaderboard";
+        return "spinlb";
     }
 
     @Override
     public String getDescription() {
-        return "Start spinning a spinner";
+        return "View the spinner leaderboard";
     }
 
     @Override
     public String getShorthand() {
-        return "spin";
+        return "spinlb";
     }
 
     @Override

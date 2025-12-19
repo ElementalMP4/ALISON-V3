@@ -4,6 +4,7 @@ import main.java.de.voidtech.alison.annotations.Command;
 import main.java.de.voidtech.alison.commands.AbstractCommand;
 import main.java.de.voidtech.alison.commands.CommandCategory;
 import main.java.de.voidtech.alison.commands.CommandContext;
+import main.java.de.voidtech.alison.commands.SlashCommandOptions;
 import main.java.de.voidtech.alison.service.AlisonService;
 import main.java.de.voidtech.alison.service.AnalysisService;
 import main.java.de.voidtech.alison.service.PrivacyService;
@@ -11,11 +12,12 @@ import main.java.de.voidtech.alison.vader.analyser.SentimentPolarities;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
-import java.util.List;
 
 @Command
 public class MyStatsCommand extends AbstractCommand {
@@ -30,10 +32,16 @@ public class MyStatsCommand extends AbstractCommand {
 	private AnalysisService analysisService;
 
 	@Override
-	public void execute(CommandContext context, List<String> args) {
+	public void execute(CommandContext context) {
 		String ID;
-    	if (args.isEmpty()) ID = context.getAuthor().getId();
-    	else ID = args.get(0).replaceAll("([^0-9])", "");
+
+		if (context.isSlashCommand()) {
+			if (context.getEvent().getOption("user") == null) ID = context.getAuthor().getId();
+			else ID = context.getEvent().getOption("user").getAsUser().getId();
+		} else {
+			if (context.getArgs().isEmpty()) ID = context.getAuthor().getId();
+			else ID = context.getArgs().get(0).replaceAll("([^0-9a-zA-Z])", "");
+		}
     	
         if (ID.equals("")) context.reply("I couldn't find that user :(");
         else {
@@ -78,7 +86,7 @@ public class MyStatsCommand extends AbstractCommand {
 
 	@Override
 	public String getDescription() {
-		return "Shows some stats about you or someone else";
+		return "Shows ALISON's dataset stats about yourself or someone else";
 	}
 
 	@Override
@@ -99,6 +107,11 @@ public class MyStatsCommand extends AbstractCommand {
 	@Override
 	public CommandCategory getCommandCategory() {
 		return CommandCategory.INFORMATION;
+	}
+
+	@Override
+	public SlashCommandOptions getSlashCommandOptions() {
+		return new SlashCommandOptions(new OptionData(OptionType.USER, "user", "The user to view stats of", false));
 	}
 
 }

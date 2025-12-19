@@ -5,6 +5,7 @@ import main.java.de.voidtech.alison.annotations.Command;
 import main.java.de.voidtech.alison.commands.AbstractCommand;
 import main.java.de.voidtech.alison.commands.CommandCategory;
 import main.java.de.voidtech.alison.commands.CommandContext;
+import main.java.de.voidtech.alison.commands.SlashCommandOptions;
 import main.java.de.voidtech.alison.service.AlisonService;
 import main.java.de.voidtech.alison.service.ClaireService;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -13,7 +14,6 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
-import java.util.List;
 
 @Command
 public class InfoCommand extends AbstractCommand {
@@ -25,7 +25,7 @@ public class InfoCommand extends AbstractCommand {
 	private ClaireService claireService;
 
 	@Override
-	public void execute(CommandContext context, List<String> args) {
+	public void execute(CommandContext context) {
 		long guildCount = context.getJDA().getGuildCache().size();
 		long memberCount = context.getJDA().getGuildCache().stream().mapToInt(Guild::getMemberCount).sum();
 		long wordCount = textGenerationService.getWordCount();
@@ -54,7 +54,7 @@ public class InfoCommand extends AbstractCommand {
 
 	@Override
 	public String getDescription() {
-		return "Provides interetsing information about ALISON including word counts and model counts";
+		return "Get ALISON's dataset stats";
 	}
 
 	@Override
@@ -85,6 +85,11 @@ public class InfoCommand extends AbstractCommand {
 	@Override
 	public CommandCategory getCommandCategory() {
 		return CommandCategory.INFORMATION;
+	}
+
+	@Override
+	public SlashCommandOptions getSlashCommandOptions() {
+		return new SlashCommandOptions();
 	}
 
 }

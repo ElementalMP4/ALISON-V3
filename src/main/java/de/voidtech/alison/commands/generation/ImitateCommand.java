@@ -4,16 +4,17 @@ import main.java.de.voidtech.alison.annotations.Command;
 import main.java.de.voidtech.alison.commands.AbstractCommand;
 import main.java.de.voidtech.alison.commands.CommandCategory;
 import main.java.de.voidtech.alison.commands.CommandContext;
+import main.java.de.voidtech.alison.commands.SlashCommandOptions;
 import main.java.de.voidtech.alison.service.AlisonService;
 import main.java.de.voidtech.alison.service.PrivacyService;
 import main.java.de.voidtech.alison.service.WebhookManager;
 import main.java.de.voidtech.alison.util.ParsingUtils;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.Webhook;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
 
 @Command
 public class ImitateCommand extends AbstractCommand {
@@ -28,10 +29,16 @@ public class ImitateCommand extends AbstractCommand {
     private WebhookManager webhookManager;
 
     @Override
-    public void execute(CommandContext context, List<String> args) {
+    public void execute(CommandContext context) {
         String ID;
-        if (args.isEmpty()) ID = context.getAuthor().getId();
-        else ID = args.get(0).replaceAll("([^0-9a-zA-Z])", "");
+
+        if (context.isSlashCommand()) {
+            if (context.getEvent().getOption("user") == null) ID = context.getAuthor().getId();
+            else ID = context.getEvent().getOption("user").getAsUser().getId();
+        } else {
+            if (context.getArgs().isEmpty()) ID = context.getAuthor().getId();
+            else ID = context.getArgs().get(0).replaceAll("([^0-9a-zA-Z])", "");
+        }
 
         if (!textService.dataIsAvailableForID(ID)) {
             context.replyErrorEmbed("I couldn't find any data for that user :(");
@@ -72,9 +79,7 @@ public class ImitateCommand extends AbstractCommand {
 
     @Override
     public String getDescription() {
-        return "Allows you to use the power of ALISON to imitate someone! ALISON constantly learns from your messages,"
-                + " and when you use this command, she uses her knowledge to try and speak like you do!\n\n"
-                + "To stop ALISON from learning from you, use the optout command!";
+        return "Allows you to use the power of ALISON to imitate someone";
     }
 
     @Override
@@ -95,5 +100,10 @@ public class ImitateCommand extends AbstractCommand {
     @Override
     public CommandCategory getCommandCategory() {
         return CommandCategory.TEXT_GENERATION;
+    }
+
+    @Override
+    public SlashCommandOptions getSlashCommandOptions() {
+        return new SlashCommandOptions(new OptionData(OptionType.USER, "user", "The user to imitate", false));
     }
 }

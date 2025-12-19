@@ -21,7 +21,10 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
-public class CommandService {
+public class MessageService {
+
+    public static final Logger LOGGER = Logger.getLogger(MessageListener.class.getSimpleName());
+    private static final int LEVENSHTEIN_THRESHOLD = 3;
 
     @Autowired
     private List<AbstractCommand> commands;
@@ -34,9 +37,6 @@ public class CommandService {
 
     @Autowired
     private PrivacyService privacyService;
-
-    public static final Logger LOGGER = Logger.getLogger(MessageListener.class.getSimpleName());
-    private static final int LEVENSHTEIN_THRESHOLD = 3;
 
     private boolean shouldHandleAsChatCommand(String prefix, Message message) {
         String messageRaw = message.getContentRaw();
@@ -92,7 +92,7 @@ public class CommandService {
             LOGGER.log(Level.INFO, "Command not found: " + messageArray.get(0));
             tryLevenshteinOptions(message, messageArray.get(0));
         } else {
-            commandOpt.run(new CommandContext(message), messageArray.subList(1, messageArray.size()));
+            commandOpt.run(new CommandContext(message, messageArray.subList(1, messageArray.size())));
         }
     }
 

@@ -1,6 +1,6 @@
 /*
 	ALISON - Automatic Learning Intelligent Sentence Organising Network
-    Copyright (C) 2023 ElementalMP4 (https://github.com/Elementalmp4/ALISON-V3)
+    Copyright (C) 2023-2026 ElementalMP4 (https://github.com/Elementalmp4/ALISON-V3)
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -18,6 +18,7 @@ package main.java.de.voidtech.alison;
 import main.java.de.voidtech.alison.listeners.EventWaiter;
 import main.java.de.voidtech.alison.listeners.MessageListener;
 import main.java.de.voidtech.alison.listeners.ReadyListener;
+import main.java.de.voidtech.alison.listeners.SlashCommandListener;
 import main.java.de.voidtech.alison.service.ConfigService;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -44,7 +45,12 @@ public class Alison
     @Bean
     @Order(3)
     @Autowired
-    public JDA getJDA(final MessageListener msgListener, final ReadyListener readyListener, final EventWaiter waiter) throws LoginException, InterruptedException {
+    public JDA getJDA(
+            final MessageListener msgListener,
+            final ReadyListener readyListener,
+            final EventWaiter waiter,
+            final SlashCommandListener slashCommandListener
+    ) throws LoginException, InterruptedException {
         final ConfigService config = new ConfigService();
         return JDABuilder.createLight(config.getToken()).enableIntents(getNonPrivilegedIntents())
         		.setMemberCachePolicy(MemberCachePolicy.ALL)
@@ -52,7 +58,7 @@ public class Alison
         		.setStatus(OnlineStatus.IDLE)
         		.setActivity(Activity.competing("the game"))
         		.setCompression(Compression.NONE)
-        		.addEventListeners(msgListener, readyListener, waiter)
+        		.addEventListeners(msgListener, readyListener, waiter, slashCommandListener)
         		.build()
         		.awaitReady();
     }

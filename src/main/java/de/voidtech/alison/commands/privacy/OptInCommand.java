@@ -4,10 +4,9 @@ import main.java.de.voidtech.alison.annotations.Command;
 import main.java.de.voidtech.alison.commands.AbstractCommand;
 import main.java.de.voidtech.alison.commands.CommandCategory;
 import main.java.de.voidtech.alison.commands.CommandContext;
+import main.java.de.voidtech.alison.commands.SlashCommandOptions;
 import main.java.de.voidtech.alison.service.PrivacyService;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
 
 @Command
 public class OptInCommand extends AbstractCommand {
@@ -16,7 +15,7 @@ public class OptInCommand extends AbstractCommand {
 	private PrivacyService privacyService;
 
 	@Override
-	public void execute(CommandContext context, List<String> args) {
+	public void execute(CommandContext context) {
 		String ID = context.getAuthor().getId();
 		if (privacyService.userHasOptedOut(ID)) {
 			context.reply("You have been re-opted in to the learning program! I will learn from your messages again!");
@@ -36,9 +35,7 @@ public class OptInCommand extends AbstractCommand {
 
 	@Override
 	public String getDescription() {
-		return "Allows ALISON to learn from your messages. By default, you will be opted in."
-				+ " You can use the optout command to stop ALISON from learning from you, and"
-				+ " the clear command to delete all your learnt words.";
+		return "Give ALISON permission to read your server messages";
 	}
 
 	@Override
@@ -59,6 +56,11 @@ public class OptInCommand extends AbstractCommand {
 	@Override
 	public CommandCategory getCommandCategory() {
 		return CommandCategory.PRIVACY;
+	}
+
+	@Override
+	public SlashCommandOptions getSlashCommandOptions() {
+		return new SlashCommandOptions();
 	}
 
 }

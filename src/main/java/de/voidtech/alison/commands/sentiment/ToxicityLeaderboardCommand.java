@@ -4,6 +4,7 @@ import main.java.de.voidtech.alison.annotations.Command;
 import main.java.de.voidtech.alison.commands.AbstractCommand;
 import main.java.de.voidtech.alison.commands.CommandCategory;
 import main.java.de.voidtech.alison.commands.CommandContext;
+import main.java.de.voidtech.alison.commands.SlashCommandOptions;
 import main.java.de.voidtech.alison.service.AnalysisService;
 import main.java.de.voidtech.alison.vader.analyser.SentimentPolarities;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -16,13 +17,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Command
-public class LeaderboardCommand extends AbstractCommand {
+public class ToxicityLeaderboardCommand extends AbstractCommand {
 
 	@Autowired
 	private AnalysisService analyser;
 
 	@Override
-	public void execute(CommandContext context, List<String> args) {
+	public void execute(CommandContext context) {
 		List<SentimentPolarities> allMembers = analyser.analyseServer(context.getGuild());
 		String leaderboard = createLeaderboardString(allMembers);
 		MessageEmbed leaderboardEmbed = new EmbedBuilder()
@@ -101,22 +102,22 @@ public class LeaderboardCommand extends AbstractCommand {
 
 	@Override
 	public String getName() {
-		return "leaderboard";
+		return "toxicitylb";
 	}
 
 	@Override
 	public String getUsage() {
-		return "leaderboard";
+		return "toxicitylb";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Allows you to see the top 5 and bottom 5 members of your server ranked by sentiment score!";
+		return "Allows you to see 5 most and 5 least toxic server members";
 	}
 
 	@Override
 	public String getShorthand() {
-		return "lb";
+		return "toxlb";
 	}
 
 	@Override
@@ -132,6 +133,11 @@ public class LeaderboardCommand extends AbstractCommand {
 	@Override
 	public boolean requiresArguments() {
 		return false;
+	}
+
+	@Override
+	public SlashCommandOptions getSlashCommandOptions() {
+		return new SlashCommandOptions();
 	}
 
 }

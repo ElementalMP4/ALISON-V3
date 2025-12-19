@@ -4,20 +4,21 @@ import main.java.de.voidtech.alison.annotations.Command;
 import main.java.de.voidtech.alison.commands.AbstractCommand;
 import main.java.de.voidtech.alison.commands.CommandCategory;
 import main.java.de.voidtech.alison.commands.CommandContext;
+import main.java.de.voidtech.alison.commands.SlashCommandOptions;
 import main.java.de.voidtech.alison.service.AlisonService;
-import main.java.de.voidtech.alison.service.ConfigService;
 import main.java.de.voidtech.alison.service.ImageService;
 import main.java.de.voidtech.alison.service.PrivacyService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
 import java.io.IOException;
-import java.util.List;
 
 @Command
 public class QuoteCommand extends AbstractCommand {
@@ -29,16 +30,19 @@ public class QuoteCommand extends AbstractCommand {
 	private PrivacyService privacyService;
 
 	@Autowired
-	private ConfigService config;
-
-	@Autowired
 	private ImageService imageService;
 
 	@Override
-	public void execute(CommandContext context, List<String> args) {		
+	public void execute(CommandContext context) {
 		String ID;
-		if (args.isEmpty()) ID = context.getAuthor().getId();
-		else ID = args.get(0).replaceAll("([^0-9a-zA-Z])", "");
+
+		if (context.isSlashCommand()) {
+			if (context.getEvent().getOption("user") == null) ID = context.getAuthor().getId();
+			else ID = context.getEvent().getOption("user").getAsUser().getId();
+		} else {
+			if (context.getArgs().isEmpty()) ID = context.getAuthor().getId();
+			else ID = context.getArgs().get(0).replaceAll("([^0-9a-zA-Z])", "");
+		}
 
 		if (!textGenerationService.dataIsAvailableForID(ID)) {
 			context.reply("I couldn't find any data for that user :(");
@@ -96,7 +100,7 @@ public class QuoteCommand extends AbstractCommand {
 
 	@Override
 	public String getDescription() {
-		return "Create an image with a quote from either yourself or a member of your server!";
+		return "Generate an infamous quote for yourself or somebody else";
 	}
 
 	@Override
@@ -117,6 +121,11 @@ public class QuoteCommand extends AbstractCommand {
 	@Override
 	public CommandCategory getCommandCategory() {
 		return CommandCategory.TEXT_GENERATION;
+	}
+
+	@Override
+	public SlashCommandOptions getSlashCommandOptions() {
+		return new SlashCommandOptions(new OptionData(OptionType.USER, "user", "The user to create a quote for", false));
 	}
 
 }
