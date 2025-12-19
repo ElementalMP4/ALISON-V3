@@ -19,7 +19,7 @@ public class SpinCommand extends AbstractCommand {
     private SpinnerService spinnerService;
 
     @Override
-    public void execute(CommandContext commandContext) {
+    protected void execute(CommandContext commandContext) {
         spinnerService.createSpinner(commandContext.getMessage());
         MessageEmbed spinEmbed = new EmbedBuilder()
                 .setColor(Color.ORANGE)

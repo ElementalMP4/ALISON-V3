@@ -29,7 +29,7 @@ public class ImitateCommand extends AbstractCommand {
     private WebhookManager webhookManager;
 
     @Override
-    public void execute(CommandContext context) {
+    protected void execute(CommandContext context) {
         String ID;
 
         if (context.isSlashCommand()) {
@@ -56,13 +56,18 @@ public class ImitateCommand extends AbstractCommand {
             return;
         }
 
-        Webhook hook = webhookManager.getOrCreateWebhook(context.getMessage().getChannel().asTextChannel(), "ALISON",
+        Webhook hook = webhookManager.getOrCreateWebhook(context.getChannel().asTextChannel(), "ALISON",
                 context.getJDA().getSelfUser().getId());
 
         if (ParsingUtils.isSnowflake(ID)) {
             Result<User> userResult = context.getJDA().retrieveUserById(ID).mapToResult().complete();
-            if (userResult.isSuccess())	webhookManager.sendWebhookMessage(hook, msg,
-                    userResult.get().getName(), userResult.get().getAvatarUrl());
+            if (userResult.isSuccess())	{
+                if (context.isSlashCommand()) {
+                    context.getEvent().deferReply(true).queue();
+                }
+                webhookManager.sendWebhookMessage(hook, msg,
+                        userResult.get().getName(), userResult.get().getAvatarUrl());
+            }
             else context.replyErrorEmbed("I couldn't find that user :(");
         } else context.reply(msg);
     }

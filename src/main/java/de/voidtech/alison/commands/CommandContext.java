@@ -4,6 +4,8 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -17,6 +19,7 @@ public class CommandContext {
     private final Member member;
     private final Guild guild;
     private final JDA jda;
+    private final MessageChannelUnion channel;
 
     private Message message;
     private SlashCommandInteractionEvent event;
@@ -28,6 +31,7 @@ public class CommandContext {
         this.guild = event.getGuild();
         this.jda = event.getJDA();
         this.event = event;
+        this.channel = event.getChannel();
     }
 
     private void assertMessageCommand() {
@@ -49,6 +53,7 @@ public class CommandContext {
         this.member = message.getMember();
         this.jda = message.getJDA();
         this.args = args;
+        this.channel = message.getChannel();
     }
 
     public void reply(String content) {
@@ -109,6 +114,10 @@ public class CommandContext {
     public Message getMessage() {
         assertMessageCommand();
         return this.message;
+    }
+
+    public MessageChannelUnion getChannel() {
+        return this.channel;
     }
 
     public List<String> getArgs() {

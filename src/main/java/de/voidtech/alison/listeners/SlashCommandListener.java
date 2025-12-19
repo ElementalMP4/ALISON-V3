@@ -43,7 +43,7 @@ public class SlashCommandListener extends ListenerAdapter {
         for (AbstractCommand command : commands) {
             if (command.getName().equalsIgnoreCase(event.getName())) {
                 CommandContext context = new CommandContext(event);
-                command.execute(context);
+                command.run(context);
                 LOGGER.log(Level.INFO, "Running slash command " + command.getName() + " from user " + event.getUser().getName());
             }
         }

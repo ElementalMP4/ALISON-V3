@@ -134,7 +134,7 @@ public class HelpCommand extends AbstractCommand {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    protected void execute(CommandContext context) {
         if (!commands.contains(this)) commands.add(this);
 
         if (context.isSlashCommand()) {

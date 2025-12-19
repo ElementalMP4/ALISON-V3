@@ -14,7 +14,7 @@ import java.awt.*;
 public class PingCommand extends AbstractCommand{
 
 	@Override
-	public void execute(CommandContext context) {
+	protected void execute(CommandContext context) {
 		long time = System.currentTimeMillis();
 		if (context.isSlashCommand()) {
 			MessageEmbed beforePingHasBeenProcessedEmbed = new EmbedBuilder()

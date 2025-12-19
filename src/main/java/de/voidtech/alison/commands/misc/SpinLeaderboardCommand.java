@@ -25,7 +25,7 @@ public class SpinLeaderboardCommand extends AbstractCommand {
     }
 
     @Override
-    public void execute(CommandContext commandContext) {
+    protected void execute(CommandContext commandContext) {
         List<Spinner> leaderboard = spinnerService.getServerLeaderboard(commandContext.getGuild().getId());
         StringBuilder leaderboardBuilder = new StringBuilder();
 

@@ -24,7 +24,7 @@ public class OptOutCommand extends AbstractCommand {
 	private EventWaiter waiter;
 	
 	@Override
-	public void execute(CommandContext context) {
+	protected void execute(CommandContext context) {
 		if (!privacyService.userHasOptedOut(context.getAuthor().getId())) {
 			privacyService.optOut(context.getAuthor().getId());
 

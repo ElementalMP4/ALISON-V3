@@ -33,7 +33,7 @@ public class QuoteCommand extends AbstractCommand {
 	private ImageService imageService;
 
 	@Override
-	public void execute(CommandContext context) {
+	protected void execute(CommandContext context) {
 		String ID;
 
 		if (context.isSlashCommand()) {

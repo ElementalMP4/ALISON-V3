@@ -28,7 +28,7 @@ public class HowToxicAmICommand extends AbstractCommand {
 	private AnalysisService analyser;
 
 	@Override
-	public void execute(CommandContext context) {
+	protected void execute(CommandContext context) {
 		User user;
 
 		if (context.isSlashCommand()) {

@@ -27,7 +27,7 @@ public class NicknameCommand extends AbstractCommand {
     private EventWaiter waiter;
 
     @Override
-    public void execute(CommandContext context) {
+    protected void execute(CommandContext context) {
         if (privacyService.userHasOptedOut(context.getMember().getId())) {
             context.replyErrorEmbed("You have opted out, so a name cannot be generated");
             return;
@@ -36,14 +36,9 @@ public class NicknameCommand extends AbstractCommand {
         String nickname = textGenerationService.createNickname(context.getMember().getId());
         if (nickname == null) context.reply("I don't have enough information to make a nickname for you :(");
         else {
-
-            if (context.isSlashCommand()) {
-
-            } else {
-                new ButtonListener(context, waiter,
-                        "Change **" + context.getMember().getUser().getName() + "'s** nickname to **" + nickname + "**?",
-                        result -> handleNicknameUpdateChoice(context.getMember(), nickname, context, result));
-            }
+            new ButtonListener(context, waiter,
+                    "Change your nickname to **" + nickname + "**?",
+                    result -> handleNicknameUpdateChoice(context.getMember(), nickname, context, result));
         }
     }
 

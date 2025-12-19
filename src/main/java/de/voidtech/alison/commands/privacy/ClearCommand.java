@@ -20,7 +20,7 @@ public class ClearCommand extends AbstractCommand {
 	private AlisonService textGenerationService;
 
     @Override
-    public void execute(CommandContext context) {
+	protected void execute(CommandContext context) {
     	new ButtonListener(context, waiter,"Are you sure you want to delete all your data? **This cannot be undone!**", result -> {
     		if (result.userSaidYes()) {
     			textGenerationService.delete(context.getAuthor().getId());

@@ -15,7 +15,7 @@ public class OptInCommand extends AbstractCommand {
 	private PrivacyService privacyService;
 
 	@Override
-	public void execute(CommandContext context) {
+	protected void execute(CommandContext context) {
 		String ID = context.getAuthor().getId();
 		if (privacyService.userHasOptedOut(ID)) {
 			context.reply("You have been re-opted in to the learning program! I will learn from your messages again!");

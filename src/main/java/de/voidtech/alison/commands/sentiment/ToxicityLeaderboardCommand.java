@@ -23,7 +23,7 @@ public class ToxicityLeaderboardCommand extends AbstractCommand {
 	private AnalysisService analyser;
 
 	@Override
-	public void execute(CommandContext context) {
+	protected void execute(CommandContext context) {
 		List<SentimentPolarities> allMembers = analyser.analyseServer(context.getGuild());
 		String leaderboard = createLeaderboardString(allMembers);
 		MessageEmbed leaderboardEmbed = new EmbedBuilder()

@@ -25,7 +25,7 @@ public class InfoCommand extends AbstractCommand {
 	private ClaireService claireService;
 
 	@Override
-	public void execute(CommandContext context) {
+	protected void execute(CommandContext context) {
 		long guildCount = context.getJDA().getGuildCache().size();
 		long memberCount = context.getJDA().getGuildCache().stream().mapToInt(Guild::getMemberCount).sum();
 		long wordCount = textGenerationService.getWordCount();

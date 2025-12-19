@@ -24,7 +24,7 @@ public class IgnoredChannelsCommand extends AbstractCommand {
     private PrivacyService privacyService;
 
     @Override
-    public void execute(CommandContext context) {
+    protected void execute(CommandContext context) {
         if (!context.getMember().hasPermission(Permission.MANAGE_SERVER)) {
             context.reply("You need the `Manage Server` permission to use this command!");
             return;

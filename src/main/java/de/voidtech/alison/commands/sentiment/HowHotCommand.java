@@ -24,7 +24,7 @@ public class HowHotCommand extends AbstractCommand {
 	private ConfigService config;
 
 	@Override
-	public void execute(CommandContext context) {
+	protected void execute(CommandContext context) {
 		String ID;
 
 		if (context.isSlashCommand()) {
