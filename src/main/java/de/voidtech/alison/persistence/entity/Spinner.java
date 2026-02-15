@@ -33,9 +33,6 @@ public class Spinner {
     private boolean isStillSpinning;
 
     @Column
-    private long spinnerDuration;
-
-    @Column
     private String knockedOverBy;
 
     public Spinner(String serverID, String channelID, String userID) {
@@ -45,14 +42,9 @@ public class Spinner {
         this.spinnerStartTime = System.currentTimeMillis();
         this.isStillSpinning = true;
         this.spinnerEndTime = 0;
-        this.spinnerDuration = 0;
     }
 
     public Spinner() {
-    }
-
-    public void updateDuration() {
-        this.spinnerDuration = System.currentTimeMillis() - this.spinnerStartTime;
     }
 
     public String getChannelID() {
@@ -72,14 +64,13 @@ public class Spinner {
     }
 
     public void finishSpinner(String knockedOverBy) {
-        updateDuration();
         this.spinnerEndTime = System.currentTimeMillis();
         this.isStillSpinning = false;
         this.knockedOverBy = knockedOverBy;
     }
 
     public long getSpinnerDuration() {
-        return this.spinnerDuration;
+        return (this.isStillSpinning ? System.currentTimeMillis() : this.spinnerEndTime) - this.spinnerStartTime;
     }
 
     public long getSpinnerDurationSeconds() {

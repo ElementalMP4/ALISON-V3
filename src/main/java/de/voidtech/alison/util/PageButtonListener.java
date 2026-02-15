@@ -21,68 +21,77 @@ public class PageButtonListener {
             MessageEmbed initialEmbed,
             BiConsumer<PageButtonConsumer, Integer> onPageChange
     ) {
-        int startPage = 0;
-
-        List<ActionComponent> buttons = createButtons(startPage, true, true);
-
         if (context.isSlashCommand()) {
             InteractionHook hook = context.getEvent()
                     .replyEmbeds(initialEmbed)
-                    .setActionRow(buttons)
+                    .setActionRow(createButtons(0, false, true))
                     .mentionRepliedUser(false)
                     .complete();
 
-            waiter.waitForEvent(
-                    ButtonInteractionEvent.class,
-                    e -> e.getUser().getId().equals(context.getAuthor().getId())
-                            && e.getHook().getId().equals(hook.getId()),
-                    e -> handle(e, hook, startPage, onPageChange),
-                    60, TimeUnit.SECONDS,
-                    () -> hook.editOriginalComponents().queue()
-            );
+            wait(context, waiter, hook, 0, onPageChange);
         } else {
             Message msg = context.getMessage()
                     .replyEmbeds(initialEmbed)
-                    .setActionRow(buttons)
+                    .setActionRow(createButtons(0, false, true))
                     .mentionRepliedUser(false)
                     .complete();
 
-            waiter.waitForEvent(
-                    ButtonInteractionEvent.class,
-                    e -> e.getUser().getId().equals(context.getAuthor().getId())
-                            && e.getMessage().getId().equals(msg.getId()),
-                    e -> handle(e, msg, startPage, onPageChange),
-                    60, TimeUnit.SECONDS,
-                    () -> msg.editMessageComponents().queue()
-            );
+            wait(context, waiter, msg, 0, onPageChange);
         }
     }
 
-    private void handle(
-            ButtonInteractionEvent event,
+    private void wait(
+            CommandContext context,
+            EventWaiter waiter,
             Object target,
-            int currentPage,
+            int page,
             BiConsumer<PageButtonConsumer, Integer> callback
     ) {
-        int page = currentPage;
+        waiter.waitForEvent(
+                ButtonInteractionEvent.class,
+                e -> e.getUser().getId().equals(context.getAuthor().getId())
+                        && matchesTarget(e, target),
+                e -> {
+                    int newPage = page;
 
-        if (event.getComponentId().startsWith("PAGE_NEXT")) page++;
-        if (event.getComponentId().startsWith("PAGE_PREV")) page--;
+                    if (e.getComponentId().startsWith("PAGE_NEXT")) newPage++;
+                    if (e.getComponentId().startsWith("PAGE_PREV")) newPage--;
 
-        page = Math.max(0, page);
+                    newPage = Math.max(0, newPage);
 
-        PageButtonConsumer consumer =
-                target instanceof Message
-                        ? new PageButtonConsumer(event, (Message) target, page)
-                        : new PageButtonConsumer(event, (InteractionHook) target, page);
+                    PageButtonConsumer consumer =
+                            target instanceof Message
+                                    ? new PageButtonConsumer(e, (Message) target, newPage)
+                                    : new PageButtonConsumer(e, (InteractionHook) target, newPage);
 
-        callback.accept(consumer, page);
+                    callback.accept(consumer, newPage);
+                    wait(context, waiter, target, newPage, callback);
+                },
+                60, TimeUnit.SECONDS,
+                () -> disableButtons(target)
+        );
+    }
+
+    private boolean matchesTarget(ButtonInteractionEvent e, Object target) {
+        if (target instanceof Message msg) {
+            return e.getMessage().getId().equals(msg.getId());
+        }
+        InteractionHook hook = (InteractionHook) target;
+        return e.getHook().getId().equals(hook.getId());
+    }
+
+    private void disableButtons(Object target) {
+        if (target instanceof Message msg) {
+            msg.editMessageComponents().queue();
+        } else {
+            ((InteractionHook) target).editOriginalComponents().queue();
+        }
     }
 
     public static List<ActionComponent> createButtons(int page, boolean hasPrev, boolean hasNext) {
         return List.of(
-                Button.primary("PAGE_PREV:" + page, "⬅ Prev").withDisabled(!hasPrev),
-                Button.primary("PAGE_NEXT:" + page, "Next ➡").withDisabled(!hasNext)
+                Button.primary("PAGE_PREV:" + page, "Previous").withDisabled(!hasPrev),
+                Button.primary("PAGE_NEXT:" + page, "Next").withDisabled(!hasNext)
         );
     }
 }

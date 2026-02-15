@@ -1,6 +1,5 @@
 package main.java.de.voidtech.alison.service;
 
-import main.java.de.voidtech.alison.listeners.MessageListener;
 import main.java.de.voidtech.alison.persistence.entity.Spinner;
 import main.java.de.voidtech.alison.persistence.repository.SpinnerRepository;
 import net.dv8tion.jda.api.entities.Message;
@@ -12,40 +11,25 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Service
 public class SpinnerService {
 
-    @Autowired
-    private SpinnerRepository repository;
-
+    private static final Logger LOGGER = Logger.getLogger(SpinnerService.class.getSimpleName());
+    private final SpinnerRepository spinnerRepository;
     private List<Spinner> spinnerCache;
 
-    public static final Logger LOGGER = Logger.getLogger(MessageListener.class.getSimpleName());
-    
     @Autowired
-    private SpinnerRepository spinnerRepository;
+    public SpinnerService(final SpinnerRepository spinnerRepository) {
+        this.spinnerRepository = spinnerRepository;
+    }
 
     @EventListener(ApplicationReadyEvent.class)
     void reloadCache() {
-        this.spinnerCache = repository.getSpinningSpinners();
+        this.spinnerCache = spinnerRepository.getSpinningSpinners();
         LOGGER.log(Level.INFO, "Loaded " + this.spinnerCache.size() + " spinners into cache");
-
-        TimerTask task = new TimerTask() {
-            public void run() {
-                for (Spinner spinner : spinnerCache) {
-                    if (!spinner.isStillSpinning()) return;
-                    spinner.updateDuration();
-                    spinnerRepository.save(spinner);
-                }
-            }
-        };
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(task, 0, 5000);
     }
 
     private Spinner getSpinnerFromCache(String channelID) {
@@ -59,19 +43,23 @@ public class SpinnerService {
     public void createSpinner(Message message) {
         Spinner spinner = new Spinner(message.getGuild().getId(), message.getChannel().getId(), message.getAuthor().getId());
         spinnerCache.add(spinner);
-        repository.save(spinner);
+        spinnerRepository.save(spinner);
     }
 
     public Spinner endSpinnage(Message message) {
         Spinner spinner = getSpinnerFromCache(message.getChannel().getId());
         spinner.finishSpinner(message.getAuthor().getId());
         spinnerCache.remove(spinner);
-        repository.save(spinner);
+        spinnerRepository.save(spinner);
         return spinner;
     }
 
     public List<Spinner> getServerLeaderboard(String serverId, int page) {
         Pageable pageable = PageRequest.of(page, Spinner.SPINNER_LB_PAGE_SIZE);
         return spinnerRepository.getSpinnerLeaderboardForServer(serverId, pageable);
+    }
+
+    public int getNumberOfLeaderboardPages(String serverId) {
+        return spinnerRepository.spinnerCountForServer(serverId) / Spinner.SPINNER_LB_PAGE_SIZE;
     }
 }

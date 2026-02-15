@@ -1,4 +1,4 @@
-package main.java.de.voidtech.alison.commands.misc;
+package main.java.de.voidtech.alison.commands.spinning;
 
 import main.java.de.voidtech.alison.annotations.Command;
 import main.java.de.voidtech.alison.commands.AbstractCommand;
@@ -32,9 +32,7 @@ public class SpinLeaderboardCommand extends AbstractCommand {
     @Override
     protected void execute(CommandContext ctx) {
         int page = 0;
-
-        List<Spinner> spinners =
-                spinnerService.getServerLeaderboard(ctx.getGuild().getId(), page);
+        List<Spinner> spinners = spinnerService.getServerLeaderboard(ctx.getGuild().getId(), page);
 
         if (spinners.isEmpty()) {
             ctx.reply("No spinner data found.");
@@ -42,18 +40,14 @@ public class SpinLeaderboardCommand extends AbstractCommand {
         }
 
         MessageEmbed embed = buildLeaderboardEmbed(ctx.getGuild(), spinners, page);
-
         new PageButtonListener(ctx, waiter, embed, (consumer, newPage) -> {
-            List<Spinner> pageData =
-                    spinnerService.getServerLeaderboard(ctx.getGuild().getId(), newPage);
+            List<Spinner> pageData = spinnerService.getServerLeaderboard(ctx.getGuild().getId(), newPage);
 
             if (pageData.isEmpty()) {
                 return;
             }
 
-            MessageEmbed updated =
-                    buildLeaderboardEmbed(ctx.getGuild(), pageData, newPage);
-
+            MessageEmbed updated = buildLeaderboardEmbed(ctx.getGuild(), pageData, newPage);
             boolean hasPrev = newPage > 0;
             boolean hasNext = pageData.size() == Spinner.SPINNER_LB_PAGE_SIZE;
 
@@ -73,8 +67,9 @@ public class SpinLeaderboardCommand extends AbstractCommand {
         int pos = page * Spinner.SPINNER_LB_PAGE_SIZE + 1;
 
         for (Spinner spinner : leaderboard) {
-            sb.append("**%d – <@%s> in %s**\n"
-                    .formatted(pos++, spinner.getUserID(), spinner.getChannelForLeaderboard()));
+            sb.append(
+                    "**%s – <@%s> in %s**\n".formatted(formatPosition(pos++), spinner.getUserID(), spinner.getChannelForLeaderboard())
+            );
             sb.append("```\n");
             sb.append("Lasted: %s\n".formatted(spinner.durationAsText()));
             sb.append("```\n\n");
@@ -86,6 +81,15 @@ public class SpinLeaderboardCommand extends AbstractCommand {
                 .setDescription(sb.toString())
                 .setFooter("Page %d".formatted(page + 1))
                 .build();
+    }
+
+    private String formatPosition(int pos) {
+        return switch (pos) {
+            case 1 -> "🥇";
+            case 2 -> "🥈";
+            case 3 -> "🥉";
+            default -> String.valueOf(pos);
+        };
     }
 
     @Override
@@ -110,7 +114,7 @@ public class SpinLeaderboardCommand extends AbstractCommand {
 
     @Override
     public CommandCategory getCommandCategory() {
-        return CommandCategory.MISC;
+        return CommandCategory.SPINNING;
     }
 
     @Override
