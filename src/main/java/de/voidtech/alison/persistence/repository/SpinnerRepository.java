@@ -17,4 +17,7 @@ public interface SpinnerRepository extends JpaRepository<Spinner, Long> {
     @Query("FROM Spinner WHERE serverID = :serverID ORDER BY spinnerDuration DESC")
     List<Spinner> getSpinnerLeaderboardForServer(String serverID, Pageable pageable);
 
+    @Query("FROM Spinner WHERE isStillSpinning = true AND serverID = :serverID")
+    List<Spinner> revealSpinners(String serverID);
+
 }

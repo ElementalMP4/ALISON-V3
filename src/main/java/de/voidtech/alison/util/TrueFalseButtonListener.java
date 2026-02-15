@@ -13,27 +13,27 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-public class ButtonListener {
+public class TrueFalseButtonListener {
 
     private List<ActionComponent> createTrueFalseButtons() {
         List<ActionComponent> components = new ArrayList<>();
-        components.add(Button.secondary("YES", ButtonConsumer.TRUE_EMOTE));
-        components.add(Button.secondary("NO", ButtonConsumer.FALSE_EMOTE));
+        components.add(Button.secondary("YES", TrueFalseButtonConsumer.TRUE_EMOTE));
+        components.add(Button.secondary("NO", TrueFalseButtonConsumer.FALSE_EMOTE));
         return components;
     }
 
-    public ButtonListener(CommandContext context, EventWaiter waiter, String question, Consumer<ButtonConsumer> result) {
+    public TrueFalseButtonListener(CommandContext context, EventWaiter waiter, String question, Consumer<TrueFalseButtonConsumer> result) {
         if (context.isSlashCommand()) {
             InteractionHook hook = context.getEvent().reply(question).setActionRow(createTrueFalseButtons()).mentionRepliedUser(false).complete();
             waiter.waitForEvent(ButtonInteractionEvent.class,
                     e -> e.getUser().getId().equals(context.getAuthor().getId()) && e.getHook().getId().equals(hook.getId()),
-                    e -> result.accept(new ButtonConsumer(e, hook)), 30, TimeUnit.SECONDS,
+                    e -> result.accept(new TrueFalseButtonConsumer(e, hook)), 30, TimeUnit.SECONDS,
                     () -> hook.editOriginalComponents().queue());
         } else {
             Message msg = context.getMessage().reply(question).setActionRow(createTrueFalseButtons()).mentionRepliedUser(false).complete();
             waiter.waitForEvent(ButtonInteractionEvent.class,
                     e -> e.getUser().getId().equals(context.getAuthor().getId()) && e.getMessage().getId().equals(msg.getId()),
-                    e -> result.accept(new ButtonConsumer(e, msg)), 30, TimeUnit.SECONDS,
+                    e -> result.accept(new TrueFalseButtonConsumer(e, msg)), 30, TimeUnit.SECONDS,
                     () -> msg.editMessageComponents().queue());
         }
     }

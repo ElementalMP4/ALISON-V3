@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -69,7 +70,8 @@ public class SpinnerService {
         return spinner;
     }
 
-    public List<Spinner> getServerLeaderboard(String serverId) {
-        return spinnerRepository.getSpinnerLeaderboardForServer(serverId, PageRequest.of(0, 10));
+    public List<Spinner> getServerLeaderboard(String serverId, int page) {
+        Pageable pageable = PageRequest.of(page, Spinner.SPINNER_LB_PAGE_SIZE);
+        return spinnerRepository.getSpinnerLeaderboardForServer(serverId, pageable);
     }
 }

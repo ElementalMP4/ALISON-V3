@@ -5,9 +5,12 @@ import main.java.de.voidtech.alison.commands.AbstractCommand;
 import main.java.de.voidtech.alison.commands.CommandCategory;
 import main.java.de.voidtech.alison.commands.CommandContext;
 import main.java.de.voidtech.alison.commands.SlashCommandOptions;
+import main.java.de.voidtech.alison.listeners.EventWaiter;
 import main.java.de.voidtech.alison.persistence.entity.Spinner;
 import main.java.de.voidtech.alison.service.SpinnerService;
+import main.java.de.voidtech.alison.util.PageButtonListener;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,32 +21,71 @@ import java.util.List;
 public class SpinLeaderboardCommand extends AbstractCommand {
 
     private final SpinnerService spinnerService;
+    private final EventWaiter waiter;
 
     @Autowired
-    public SpinLeaderboardCommand(final SpinnerService spinnerService) {
+    public SpinLeaderboardCommand(final SpinnerService spinnerService, final EventWaiter waiter) {
         this.spinnerService = spinnerService;
+        this.waiter = waiter;
     }
 
     @Override
-    protected void execute(CommandContext commandContext) {
-        List<Spinner> leaderboard = spinnerService.getServerLeaderboard(commandContext.getGuild().getId());
-        StringBuilder leaderboardBuilder = new StringBuilder();
+    protected void execute(CommandContext ctx) {
+        int page = 0;
 
-        int pos = 1;
-        for (Spinner spinner : leaderboard) {
-            leaderboardBuilder.append("**%d - <@%s> in <#%s>**\n".formatted(pos, spinner.getUserID(), spinner.getChannelID()));
-            leaderboardBuilder.append("```\n");
-            leaderboardBuilder.append("Lasted: %s\n".formatted(spinner.durationAsText()));
-            leaderboardBuilder.append("```\n\n");
+        List<Spinner> spinners =
+                spinnerService.getServerLeaderboard(ctx.getGuild().getId(), page);
+
+        if (spinners.isEmpty()) {
+            ctx.reply("No spinner data found.");
+            return;
         }
 
-        MessageEmbed leaderboardEmbed = new EmbedBuilder()
-                .setColor(Color.ORANGE)
-                .setTitle("%s Leaderboard".formatted(commandContext.getGuild().getName()))
-                .setDescription(leaderboardBuilder.toString())
-                .build();
+        MessageEmbed embed = buildLeaderboardEmbed(ctx.getGuild(), spinners, page);
 
-        commandContext.reply(leaderboardEmbed);
+        new PageButtonListener(ctx, waiter, embed, (consumer, newPage) -> {
+            List<Spinner> pageData =
+                    spinnerService.getServerLeaderboard(ctx.getGuild().getId(), newPage);
+
+            if (pageData.isEmpty()) {
+                return;
+            }
+
+            MessageEmbed updated =
+                    buildLeaderboardEmbed(ctx.getGuild(), pageData, newPage);
+
+            boolean hasPrev = newPage > 0;
+            boolean hasNext = pageData.size() == Spinner.SPINNER_LB_PAGE_SIZE;
+
+            consumer.edit(
+                    updated,
+                    PageButtonListener.createButtons(newPage, hasPrev, hasNext)
+            );
+        });
+    }
+
+    public MessageEmbed buildLeaderboardEmbed(
+            Guild guild,
+            List<Spinner> leaderboard,
+            int page
+    ) {
+        StringBuilder sb = new StringBuilder();
+        int pos = page * Spinner.SPINNER_LB_PAGE_SIZE + 1;
+
+        for (Spinner spinner : leaderboard) {
+            sb.append("**%d – <@%s> in %s**\n"
+                    .formatted(pos++, spinner.getUserID(), spinner.getChannelForLeaderboard()));
+            sb.append("```\n");
+            sb.append("Lasted: %s\n".formatted(spinner.durationAsText()));
+            sb.append("```\n\n");
+        }
+
+        return new EmbedBuilder()
+                .setColor(Color.ORANGE)
+                .setTitle("%s Spinner Leaderboard".formatted(guild.getName()))
+                .setDescription(sb.toString())
+                .setFooter("Page %d".formatted(page + 1))
+                .build();
     }
 
     @Override

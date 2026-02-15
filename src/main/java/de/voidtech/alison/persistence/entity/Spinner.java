@@ -7,6 +7,9 @@ import java.util.List;
 @Entity
 @Table(name = "spinners")
 public class Spinner {
+
+    public static final int SPINNER_LB_PAGE_SIZE = 5;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -54,6 +57,14 @@ public class Spinner {
 
     public String getChannelID() {
         return this.channelID;
+    }
+
+    public String getChannelForLeaderboard() {
+        if (this.isStillSpinning) {
+            return "????????";
+        } else {
+            return "<#%s>".formatted(this.channelID);
+        }
     }
 
     public String getUserID() {

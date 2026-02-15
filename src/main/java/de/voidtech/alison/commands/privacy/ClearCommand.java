@@ -7,7 +7,7 @@ import main.java.de.voidtech.alison.commands.CommandContext;
 import main.java.de.voidtech.alison.commands.SlashCommandOptions;
 import main.java.de.voidtech.alison.listeners.EventWaiter;
 import main.java.de.voidtech.alison.service.AlisonService;
-import main.java.de.voidtech.alison.util.ButtonListener;
+import main.java.de.voidtech.alison.util.TrueFalseButtonListener;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Command
@@ -21,7 +21,7 @@ public class ClearCommand extends AbstractCommand {
 
     @Override
 	protected void execute(CommandContext context) {
-    	new ButtonListener(context, waiter,"Are you sure you want to delete all your data? **This cannot be undone!**", result -> {
+    	new TrueFalseButtonListener(context, waiter,"Are you sure you want to delete all your data? **This cannot be undone!**", result -> {
     		if (result.userSaidYes()) {
     			textGenerationService.delete(context.getAuthor().getId());
 				result.editResponse("Your data has been cleared! If you want to stop data collection, use the `optout` command!");
