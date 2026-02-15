@@ -24,16 +24,12 @@ public interface SpinnerRepository extends JpaRepository<Spinner, Long> {
                     ELSE (s.spinnerEndTime - s.spinnerStartTime)
                   END DESC
             """)
-    List<Spinner> getSpinnerLeaderboardForServer(
-            String serverID,
-            long nowMillis,
-            Pageable pageable
-    );
+    List<Spinner> getSpinnerLeaderboardForServer(String serverID, long nowMillis, Pageable pageable);
 
     @Query("SELECT COUNT(s) FROM Spinner s WHERE s.serverID = :serverID")
     long spinnerCountForServer(String serverID);
 
     @Query("FROM Spinner WHERE isStillSpinning = true AND serverID = :serverID")
-    List<Spinner> revealSpinners(String serverID);
+    List<Spinner> revealSpinners(String serverID, Pageable pageable);
 
 }

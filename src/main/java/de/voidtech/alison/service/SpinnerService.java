@@ -62,4 +62,9 @@ public class SpinnerService {
     public long getNumberOfLeaderboardPages(String serverId) {
         return (long) Math.ceil((double) spinnerRepository.spinnerCountForServer(serverId) / Spinner.SPINNER_LB_PAGE_SIZE);
     }
+
+    public List<Spinner> revealSpinners(String guildId, int page) {
+        Pageable pageable = PageRequest.of(page, Spinner.SPINNER_LB_PAGE_SIZE);
+        return spinnerRepository.revealSpinners(guildId, pageable);
+    }
 }
