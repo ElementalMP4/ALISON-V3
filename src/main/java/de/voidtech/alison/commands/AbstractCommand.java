@@ -6,6 +6,7 @@ import main.java.de.voidtech.alison.util.Stopwatch;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,9 +21,20 @@ public abstract class AbstractCommand {
 
     public static final Logger LOGGER = Logger.getLogger(AbstractCommand.class.getSimpleName());
 
+    private static final Set<ChannelType> FORBIDDEN_ZONES = Set.of(
+            ChannelType.GUILD_PRIVATE_THREAD,
+            ChannelType.GUILD_NEWS_THREAD,
+            ChannelType.GUILD_PUBLIC_THREAD
+    );
+
     public void run(CommandContext context) {
         try {
-            if (this.getCommandCategory() == CommandCategory.MANAGEMENT && !configService.getMaster().equals(context.getAuthor().getId())) {
+            if (FORBIDDEN_ZONES.contains(context.getChannel().getType())  && !isMaster(context)) {
+                context.reply("Commands cannot be used in threads!");
+                return;
+            }
+
+            if (this.getCommandCategory() == CommandCategory.MANAGEMENT && !isMaster(context)) {
                 context.reply("Only the bot master can use this command!");
                 return;
             }
@@ -50,6 +62,10 @@ public abstract class AbstractCommand {
             LOGGER.log(Level.SEVERE, "Error executing command: " + this.getName(), e);
             context.reply("An error has occurred whilst running this command: " + e.getMessage());
         }
+    }
+
+    private boolean isMaster(CommandContext context) {
+        return configService.getMaster().equals(context.getAuthor().getId());
     }
 
     protected abstract void execute(CommandContext commandContext);
