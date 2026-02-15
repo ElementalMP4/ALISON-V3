@@ -56,10 +56,10 @@ public class SpinnerService {
 
     public List<Spinner> getServerLeaderboard(String serverId, int page) {
         Pageable pageable = PageRequest.of(page, Spinner.SPINNER_LB_PAGE_SIZE);
-        return spinnerRepository.getSpinnerLeaderboardForServer(serverId, pageable);
+        return spinnerRepository.getSpinnerLeaderboardForServer(serverId, System.currentTimeMillis(), pageable);
     }
 
-    public int getNumberOfLeaderboardPages(String serverId) {
-        return spinnerRepository.spinnerCountForServer(serverId) / Spinner.SPINNER_LB_PAGE_SIZE;
+    public long getNumberOfLeaderboardPages(String serverId) {
+        return (long) Math.ceil((double) spinnerRepository.spinnerCountForServer(serverId) / Spinner.SPINNER_LB_PAGE_SIZE);
     }
 }

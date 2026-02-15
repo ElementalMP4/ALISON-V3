@@ -32,6 +32,8 @@ public class SpinLeaderboardCommand extends AbstractCommand {
     @Override
     protected void execute(CommandContext ctx) {
         int page = 0;
+
+        long pages = spinnerService.getNumberOfLeaderboardPages(ctx.getGuild().getId());
         List<Spinner> spinners = spinnerService.getServerLeaderboard(ctx.getGuild().getId(), page);
 
         if (spinners.isEmpty()) {
@@ -39,7 +41,7 @@ public class SpinLeaderboardCommand extends AbstractCommand {
             return;
         }
 
-        MessageEmbed embed = buildLeaderboardEmbed(ctx.getGuild(), spinners, page);
+        MessageEmbed embed = buildLeaderboardEmbed(ctx.getGuild(), spinners, page, pages);
         new PageButtonListener(ctx, waiter, embed, (consumer, newPage) -> {
             List<Spinner> pageData = spinnerService.getServerLeaderboard(ctx.getGuild().getId(), newPage);
 
@@ -47,7 +49,7 @@ public class SpinLeaderboardCommand extends AbstractCommand {
                 return;
             }
 
-            MessageEmbed updated = buildLeaderboardEmbed(ctx.getGuild(), pageData, newPage);
+            MessageEmbed updated = buildLeaderboardEmbed(ctx.getGuild(), pageData, newPage, pages);
             boolean hasPrev = newPage > 0;
             boolean hasNext = pageData.size() == Spinner.SPINNER_LB_PAGE_SIZE;
 
@@ -61,7 +63,8 @@ public class SpinLeaderboardCommand extends AbstractCommand {
     public MessageEmbed buildLeaderboardEmbed(
             Guild guild,
             List<Spinner> leaderboard,
-            int page
+            int page,
+            long pages
     ) {
         StringBuilder sb = new StringBuilder();
         int pos = page * Spinner.SPINNER_LB_PAGE_SIZE + 1;
@@ -79,7 +82,7 @@ public class SpinLeaderboardCommand extends AbstractCommand {
                 .setColor(Color.ORANGE)
                 .setTitle("%s Spinner Leaderboard".formatted(guild.getName()))
                 .setDescription(sb.toString())
-                .setFooter("Page %d".formatted(page + 1))
+                .setFooter("Page %d of %d".formatted(page + 1, pages))
                 .build();
     }
 
