@@ -60,6 +60,6 @@ public class SpinnerService {
     }
 
     public long getNumberOfLeaderboardPages(String serverId) {
-        return spinnerRepository.spinnerCountForServer(serverId) / Spinner.SPINNER_LB_PAGE_SIZE;
+        return (long) Math.ceil((double) spinnerRepository.spinnerCountForServer(serverId) / Spinner.SPINNER_LB_PAGE_SIZE);
     }
 }
