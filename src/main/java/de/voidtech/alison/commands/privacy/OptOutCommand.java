@@ -8,7 +8,7 @@ import main.java.de.voidtech.alison.commands.SlashCommandOptions;
 import main.java.de.voidtech.alison.listeners.EventWaiter;
 import main.java.de.voidtech.alison.service.AlisonService;
 import main.java.de.voidtech.alison.service.PrivacyService;
-import main.java.de.voidtech.alison.util.ButtonListener;
+import main.java.de.voidtech.alison.util.TrueFalseButtonListener;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Command
@@ -28,7 +28,7 @@ public class OptOutCommand extends AbstractCommand {
 		if (!privacyService.userHasOptedOut(context.getAuthor().getId())) {
 			privacyService.optOut(context.getAuthor().getId());
 
-			new ButtonListener(context, waiter,"Would you like to delete your stored data?", result -> {
+			new TrueFalseButtonListener(context, waiter,"Would you like to delete your stored data?", result -> {
 				if (result.userSaidYes()) {
 					textGenerationService.delete(context.getAuthor().getId());
 					result.editResponse("Your data has been cleared!");

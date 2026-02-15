@@ -8,8 +8,8 @@ import main.java.de.voidtech.alison.commands.SlashCommandOptions;
 import main.java.de.voidtech.alison.listeners.EventWaiter;
 import main.java.de.voidtech.alison.service.AlisonService;
 import main.java.de.voidtech.alison.service.PrivacyService;
-import main.java.de.voidtech.alison.util.ButtonConsumer;
-import main.java.de.voidtech.alison.util.ButtonListener;
+import main.java.de.voidtech.alison.util.TrueFalseButtonConsumer;
+import main.java.de.voidtech.alison.util.TrueFalseButtonListener;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +36,13 @@ public class NicknameCommand extends AbstractCommand {
         String nickname = textGenerationService.createNickname(context.getMember().getId());
         if (nickname == null) context.reply("I don't have enough information to make a nickname for you :(");
         else {
-            new ButtonListener(context, waiter,
+            new TrueFalseButtonListener(context, waiter,
                     "Change your nickname to **" + nickname + "**?",
                     result -> handleNicknameUpdateChoice(context.getMember(), nickname, context, result));
         }
     }
 
-    private void handleNicknameUpdateChoice(Member member, String nickname, CommandContext context, ButtonConsumer result) {
+    private void handleNicknameUpdateChoice(Member member, String nickname, CommandContext context, TrueFalseButtonConsumer result) {
         if (result.userSaidYes()) {
             if (member.isOwner()) {
                 result.editResponse("I can't change the owner's nickname! The nickname I generated for you was **" + nickname + "**");

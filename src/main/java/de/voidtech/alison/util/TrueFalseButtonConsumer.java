@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 
-public class ButtonConsumer {
+public class TrueFalseButtonConsumer {
 
     public static final String TRUE_EMOTE = "\u2705";
     public static final String FALSE_EMOTE = "\u274C";
@@ -14,7 +14,7 @@ public class ButtonConsumer {
     private Message message;
     private InteractionHook hook;
 
-    public ButtonConsumer(ButtonInteractionEvent button, Message message) {
+    public TrueFalseButtonConsumer(ButtonInteractionEvent button, Message message) {
         this.message = message;
         this.button = button;
         if (!this.button.isAcknowledged())  {
@@ -23,7 +23,7 @@ public class ButtonConsumer {
         }
     }
 
-    public ButtonConsumer(ButtonInteractionEvent button, InteractionHook hook) {
+    public TrueFalseButtonConsumer(ButtonInteractionEvent button, InteractionHook hook) {
         this.hook = hook;
         this.button = button;
         if (!this.button.isAcknowledged())  {

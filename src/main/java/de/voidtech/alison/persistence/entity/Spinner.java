@@ -7,6 +7,9 @@ import java.util.List;
 @Entity
 @Table(name = "spinners")
 public class Spinner {
+
+    public static final int SPINNER_LB_PAGE_SIZE = 5;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -30,9 +33,6 @@ public class Spinner {
     private boolean isStillSpinning;
 
     @Column
-    private long spinnerDuration;
-
-    @Column
     private String knockedOverBy;
 
     public Spinner(String serverID, String channelID, String userID) {
@@ -42,18 +42,21 @@ public class Spinner {
         this.spinnerStartTime = System.currentTimeMillis();
         this.isStillSpinning = true;
         this.spinnerEndTime = 0;
-        this.spinnerDuration = 0;
     }
 
     public Spinner() {
     }
 
-    public void updateDuration() {
-        this.spinnerDuration = System.currentTimeMillis() - this.spinnerStartTime;
-    }
-
     public String getChannelID() {
         return this.channelID;
+    }
+
+    public String getChannelForLeaderboard() {
+        if (this.isStillSpinning) {
+            return "????????";
+        } else {
+            return "<#%s>".formatted(this.channelID);
+        }
     }
 
     public String getUserID() {
@@ -61,14 +64,13 @@ public class Spinner {
     }
 
     public void finishSpinner(String knockedOverBy) {
-        updateDuration();
         this.spinnerEndTime = System.currentTimeMillis();
         this.isStillSpinning = false;
         this.knockedOverBy = knockedOverBy;
     }
 
     public long getSpinnerDuration() {
-        return this.spinnerDuration;
+        return (this.isStillSpinning ? System.currentTimeMillis() : this.spinnerEndTime) - this.spinnerStartTime;
     }
 
     public long getSpinnerDurationSeconds() {

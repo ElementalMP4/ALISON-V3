@@ -1,4 +1,4 @@
-package main.java.de.voidtech.alison.commands.misc;
+package main.java.de.voidtech.alison.commands.spinning;
 
 import main.java.de.voidtech.alison.annotations.Command;
 import main.java.de.voidtech.alison.commands.AbstractCommand;
@@ -51,7 +51,7 @@ public class SpinCommand extends AbstractCommand {
 
     @Override
     public CommandCategory getCommandCategory() {
-        return CommandCategory.MISC;
+        return CommandCategory.SPINNING;
     }
 
     @Override
