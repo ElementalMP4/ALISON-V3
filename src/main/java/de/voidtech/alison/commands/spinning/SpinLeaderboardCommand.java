@@ -8,7 +8,7 @@ import main.java.de.voidtech.alison.commands.SlashCommandOptions;
 import main.java.de.voidtech.alison.listeners.EventWaiter;
 import main.java.de.voidtech.alison.persistence.entity.Spinner;
 import main.java.de.voidtech.alison.service.SpinnerService;
-import main.java.de.voidtech.alison.util.PageButtonListener;
+import main.java.de.voidtech.alison.interaction.PageButtonListener;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;

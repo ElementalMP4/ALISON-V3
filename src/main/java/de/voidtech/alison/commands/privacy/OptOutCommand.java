@@ -8,7 +8,7 @@ import main.java.de.voidtech.alison.commands.SlashCommandOptions;
 import main.java.de.voidtech.alison.listeners.EventWaiter;
 import main.java.de.voidtech.alison.service.AlisonService;
 import main.java.de.voidtech.alison.service.PrivacyService;
-import main.java.de.voidtech.alison.util.TrueFalseButtonListener;
+import main.java.de.voidtech.alison.interaction.TrueFalseButtonListener;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.springframework.beans.factory.annotation.Autowired;

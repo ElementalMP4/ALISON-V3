@@ -1,4 +1,4 @@
-package main.java.de.voidtech.alison.util;
+package main.java.de.voidtech.alison.interaction;
 
 import main.java.de.voidtech.alison.commands.CommandContext;
 import main.java.de.voidtech.alison.listeners.EventWaiter;

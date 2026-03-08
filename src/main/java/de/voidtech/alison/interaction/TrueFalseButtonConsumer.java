@@ -1,4 +1,4 @@
-package main.java.de.voidtech.alison.util;
+package main.java.de.voidtech.alison.interaction;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
