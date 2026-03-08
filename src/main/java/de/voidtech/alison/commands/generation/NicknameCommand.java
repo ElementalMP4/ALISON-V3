@@ -5,11 +5,12 @@ import main.java.de.voidtech.alison.commands.AbstractCommand;
 import main.java.de.voidtech.alison.commands.CommandCategory;
 import main.java.de.voidtech.alison.commands.CommandContext;
 import main.java.de.voidtech.alison.commands.SlashCommandOptions;
+import main.java.de.voidtech.alison.interaction.InteractionHolder;
+import main.java.de.voidtech.alison.interaction.NicknameButtonConsumer;
+import main.java.de.voidtech.alison.interaction.NicknameButtonListener;
 import main.java.de.voidtech.alison.listeners.EventWaiter;
 import main.java.de.voidtech.alison.service.AlisonService;
 import main.java.de.voidtech.alison.service.PrivacyService;
-import main.java.de.voidtech.alison.interaction.TrueFalseButtonConsumer;
-import main.java.de.voidtech.alison.interaction.TrueFalseButtonListener;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -39,6 +40,10 @@ public class NicknameCommand extends AbstractCommand {
             return;
         }
 
+        generateNickname(context, null);
+    }
+
+    private void generateNickname(CommandContext context, InteractionHolder holder) {
         String nickname = textGenerationService.createNickname(context.getMember().getId());
         if (nickname == null) context.replyErrorEmbed("I don't have enough information to make a nickname for you :(");
         else {
@@ -47,57 +52,70 @@ public class NicknameCommand extends AbstractCommand {
                     .setTitle("Change Nickname")
                     .setDescription("Change your nickname to **" + nickname + "**?")
                     .build();
-            new TrueFalseButtonListener(context, waiter, askEmbed,
-                    result -> handleNicknameUpdateChoice(context.getMember(), nickname, context, result));
+            new NicknameButtonListener(context, waiter, askEmbed, holder, result -> handleNicknameUpdateChoice(context.getMember(), nickname, context, result));
         }
     }
 
-    private void handleNicknameUpdateChoice(Member member, String nickname, CommandContext context, TrueFalseButtonConsumer result) {
-        if (result.userSaidYes()) {
-            if (member.isOwner()) {
+    private void handleNicknameUpdateChoice(Member member, String nickname, CommandContext context, NicknameButtonConsumer result) {
+        switch (result.getUserOption()) {
+            case NicknameButtonConsumer.YES -> {
+                if (member.isOwner()) {
+                    MessageEmbed resp = new EmbedBuilder()
+                            .setTitle("Nickname Unchanged")
+                            .setColor(Color.RED)
+                            .setDescription("I can't change the owner's nickname! The nickname I generated for you was **" + nickname + "**")
+                            .build();
+                    result.editResponse(resp);
+                    return;
+                }
+                if (!context.getGuild().getSelfMember().hasPermission(Permission.NICKNAME_MANAGE)) {
+                    MessageEmbed resp = new EmbedBuilder()
+                            .setTitle("Missing Permissions")
+                            .setColor(Color.RED)
+                            .setDescription("I don't have permission to change nicknames! Please make sure I have the `Manage Nicknames` permission! The nickname I generated for you was **" + nickname + "**")
+                            .build();
+                    result.editResponse(resp);
+                    return;
+                }
+                if (!context.getGuild().getSelfMember().canInteract(member)) {
+                    MessageEmbed resp = new EmbedBuilder()
+                            .setTitle("Missing Permissions")
+                            .setColor(Color.RED)
+                            .setDescription("I don't have permission to change your nickname! I need my role to be above your highest role! The nickname I generated for you was **" + nickname + "**")
+                            .build();
+                    result.editResponse(resp);
+                    return;
+                }
+
+                String oldNickname = member.getEffectiveName();
+                member.modifyNickname(nickname).complete();
+
+                MessageEmbed resp = new EmbedBuilder()
+                        .setTitle("Nickname Updated")
+                        .setColor(Color.GREEN)
+                        .setDescription("Your nickname has been changed to **" + nickname + "** from **" + oldNickname + "**")
+                        .build();
+                result.editResponse(resp);
+            }
+
+            case NicknameButtonConsumer.NO -> {
                 MessageEmbed resp = new EmbedBuilder()
                         .setTitle("Nickname Unchanged")
-                        .setColor(Color.RED)
-                        .setDescription("I can't change the owner's nickname! The nickname I generated for you was **" + nickname + "**")
+                        .setColor(Color.GRAY)
+                        .setDescription("I won't change your nickname to **" + nickname + "**")
                         .build();
                 result.editResponse(resp);
-                return;
-            }
-            if (!context.getGuild().getSelfMember().hasPermission(Permission.NICKNAME_MANAGE)) {
-                MessageEmbed resp = new EmbedBuilder()
-                        .setTitle("Missing Permissions")
-                        .setColor(Color.RED)
-                        .setDescription("I don't have permission to change nicknames! Please make sure I have the `Manage Nicknames` permission! The nickname I generated for you was **" + nickname + "**")
-                        .build();
-                result.editResponse(resp);
-                return;
-            }
-            if (!context.getGuild().getSelfMember().canInteract(member)) {
-                MessageEmbed resp = new EmbedBuilder()
-                        .setTitle("Missing Permissions")
-                        .setColor(Color.RED)
-                        .setDescription("I don't have permission to change your nickname! I need my role to be above your highest role! The nickname I generated for you was **" + nickname + "**")
-                        .build();
-                result.editResponse(resp);
-                return;
             }
 
-            String oldNickname = member.getEffectiveName();
-            member.modifyNickname(nickname).complete();
-
-            MessageEmbed resp = new EmbedBuilder()
-                    .setTitle("Nickname Updated")
-                    .setColor(Color.GREEN)
-                    .setDescription("Your nickname has been changed to **" + nickname + "** from **" + oldNickname + "**")
-                    .build();
-            result.editResponse(resp);
-        } else {
-            MessageEmbed resp = new EmbedBuilder()
-                    .setTitle("Nickname Unchanged")
-                    .setColor(Color.GRAY)
-                    .setDescription("I won't change your nickname to **" + nickname + "**")
-                    .build();
-            result.editResponse(resp);
+            case NicknameButtonConsumer.RECYCLE -> {
+                InteractionHolder holder;
+                if (context.isSlashCommand()) {
+                    holder = new InteractionHolder(result.getHook());
+                } else {
+                    holder = new InteractionHolder(result.getMessage());
+                }
+                generateNickname(context, holder);
+            }
         }
     }
 

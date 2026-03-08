@@ -7,9 +7,6 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 
 public class TrueFalseButtonConsumer {
 
-    public static final String TRUE_EMOTE = "\u2705";
-    public static final String FALSE_EMOTE = "\u274C";
-
     private final ButtonInteractionEvent button;
 
     private Message message;
