@@ -8,25 +8,47 @@ import main.java.de.voidtech.alison.commands.SlashCommandOptions;
 import main.java.de.voidtech.alison.listeners.EventWaiter;
 import main.java.de.voidtech.alison.service.AlisonService;
 import main.java.de.voidtech.alison.util.TrueFalseButtonListener;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.awt.*;
 
 @Command
 public class ClearCommand extends AbstractCommand {
 
-	@Autowired
-	private EventWaiter waiter;
+	private final EventWaiter waiter;
+	private final AlisonService textGenerationService;
 
 	@Autowired
-	private AlisonService textGenerationService;
+	public ClearCommand(EventWaiter waiter, AlisonService textGenerationService) {
+		this.waiter = waiter;
+		this.textGenerationService = textGenerationService;
+	}
 
     @Override
 	protected void execute(CommandContext context) {
-    	new TrueFalseButtonListener(context, waiter,"Are you sure you want to delete all your data? **This cannot be undone!**", result -> {
+		MessageEmbed askEmbed = new EmbedBuilder()
+				.setColor(Color.ORANGE)
+				.setTitle("Delete Data")
+				.setDescription("Are you sure you want to delete all your data? **This cannot be undone!**")
+				.build();
+    	new TrueFalseButtonListener(context, waiter, askEmbed, result -> {
     		if (result.userSaidYes()) {
-    			textGenerationService.delete(context.getAuthor().getId());
-				result.editResponse("Your data has been cleared! If you want to stop data collection, use the `optout` command!");
+				textGenerationService.delete(context.getAuthor().getId());
+				MessageEmbed resp = new EmbedBuilder()
+						.setTitle("Data Deleted")
+						.setColor(Color.GREEN)
+						.setDescription("Your data has been cleared! If you want to stop data collection, use the `optout` command!")
+						.build();
+				result.editResponse(resp);
     		} else {
-    			result.editResponse("Your data has been left alone for now.");
+				MessageEmbed resp = new EmbedBuilder()
+						.setTitle("Data Not Deleted")
+						.setColor(Color.RED)
+						.setDescription("Your data will not be deleted. If you want to stop data collection without deleting your data, use the `optout` command!")
+						.build();
+    			result.editResponse(resp);
     		}
 		});		
     }
@@ -43,7 +65,7 @@ public class ClearCommand extends AbstractCommand {
 
 	@Override
 	public String getDescription() {
-		return "Delete all of your data from ALISON's dataset";
+		return "Delete all of your data from the ALISON database. This is irreversible, and has immediate effect.";
 	}
 
 	@Override

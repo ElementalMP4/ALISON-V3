@@ -9,35 +9,55 @@ import main.java.de.voidtech.alison.listeners.EventWaiter;
 import main.java.de.voidtech.alison.service.AlisonService;
 import main.java.de.voidtech.alison.service.PrivacyService;
 import main.java.de.voidtech.alison.util.TrueFalseButtonListener;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.awt.*;
 
 @Command
 public class OptOutCommand extends AbstractCommand {
 
-	@Autowired
-	private PrivacyService privacyService;
+	private final PrivacyService privacyService;
+	private final AlisonService textGenerationService;
+	private final EventWaiter waiter;
 
 	@Autowired
-	private AlisonService textGenerationService;
-
-	@Autowired
-	private EventWaiter waiter;
+	public OptOutCommand(PrivacyService privacyService, AlisonService textGenerationService, EventWaiter waiter) {
+		this.privacyService = privacyService;
+		this.textGenerationService = textGenerationService;
+		this.waiter = waiter;
+	}
 	
 	@Override
 	protected void execute(CommandContext context) {
 		if (!privacyService.userHasOptedOut(context.getAuthor().getId())) {
 			privacyService.optOut(context.getAuthor().getId());
 
-			new TrueFalseButtonListener(context, waiter,"Would you like to delete your stored data?", result -> {
+			MessageEmbed askEmbed = new EmbedBuilder()
+					.setColor(Color.ORANGE)
+					.setTitle("Also delete data?")
+					.setDescription("You have now been opted out of data collection. Would you also like any data we have to be deleted? **This cannot be undone!**")
+					.build();
+			new TrueFalseButtonListener(context, waiter,askEmbed, result -> {
 				if (result.userSaidYes()) {
 					textGenerationService.delete(context.getAuthor().getId());
-					result.editResponse("Your data has been cleared!");
+					MessageEmbed resp = new EmbedBuilder()
+							.setTitle("Data Deleted")
+							.setColor(Color.GREEN)
+							.setDescription("Your data has been cleared, and you have been opted out of data collection!")
+							.build();
+					result.editResponse(resp);
 				} else {
-					result.editResponse("Your data has been left alone for now. Use the `clear` command if you change your mind!");
-				}
+					MessageEmbed resp = new EmbedBuilder()
+							.setTitle("Opted Out")
+							.setColor(Color.GREEN)
+							.setDescription("You have been opted out of data collection. If you also want to delete your data, use the `clear` command!")
+							.build();
+					result.editResponse(resp);				}
 			});			
 			
-		} else context.reply("You have already chosen to opt out!");
+		} else context.replyErrorEmbed("You have already chosen to opt out!");
 	}
 
 	@Override

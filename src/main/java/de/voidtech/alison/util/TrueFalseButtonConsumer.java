@@ -1,6 +1,7 @@
 package main.java.de.voidtech.alison.util;
 
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 
@@ -32,11 +33,11 @@ public class TrueFalseButtonConsumer {
         }
     }
 
-    public void editResponse(String newContent) {
+    public void editResponse(MessageEmbed newContent) {
         if (message == null) {
-            hook.editOriginal(newContent).queue();
+            hook.editOriginalEmbeds(newContent).queue();
         } else {
-            message.editMessage(newContent).queue();
+            message.editMessageEmbeds(newContent).queue();
         }
     }
 
